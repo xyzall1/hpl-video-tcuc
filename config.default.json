@@ -1,0 +1,25 @@
+{
+  "elevenlabs": {
+    "voice_id": null,
+    "model_id": "eleven_v3",
+    "voice_settings": { "stability": 0.5, "similarity_boost": 0.75, "style": 0.0, "use_speaker_boost": true }
+  },
+  "pauses": { "sentence": 0.4, "paragraph": 1.0, "lead_in": 0.3, "tail": 0.6 },
+  "subtitle": {
+    "font": "assets/fonts/Poppins-Bold.ttf",
+    "font_family": "Poppins",
+    "font_style": "Bold",
+    "font_size": 44,
+    "background": "#2796A3",
+    "text_color": "#FFFFFF",
+    "pill_height": 76,
+    "padding_x": 38,
+    "center_y": 1000,
+    "max_chars": 56
+  },
+  "canvas": [1920, 1080],
+  "export": { "resolution": "720p", "fps": 30 },
+  "bumper_gain": 0.63,
+  "image_fade_ms": 350,
+  "image_push_in": [141, 148]
+}
