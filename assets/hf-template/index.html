@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>Learning Video MG</title>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<style>
+  @font-face { font-family: "Jakarta"; src: url("fonts/PlusJakartaSans-Regular.ttf"); font-weight: 400; }
+  @font-face { font-family: "Jakarta"; src: url("fonts/PlusJakartaSans-Bold.ttf"); font-weight: 700; }
+  @font-face { font-family: "Jakarta"; src: url("fonts/PlusJakartaSans-ExtraBold.ttf"); font-weight: 800; }
+  :root { --bg:#F6F8F9; --ink:#1D2B36; --mute:#8A99A6; --line:#DDE5EA; --teal:#2796A3; --teal2:#7CC6CE; --red:#E25C5C; --amber:#F2A541; }
+  body { margin:0; background:var(--bg); font-family:"Jakarta", sans-serif; color:var(--ink); }
+  #root { position:relative; width:100%; height:100%; overflow:hidden; background:var(--bg); }
+  .bgdots { position:absolute; inset:0; background-image:radial-gradient(#E3EAEE 2px, transparent 2px); background-size:48px 48px; }
+  .clip { position:absolute; inset:0; }
+  .abs { position:absolute; }
+  .card { position:absolute; background:#fff; border-radius:22px; box-shadow:0 10px 30px rgba(29,43,54,.08); border:2px solid var(--line); }
+  .h { position:absolute; font-weight:800; letter-spacing:-0.02em; }
+  .tag { position:absolute; font-weight:700; font-size:30px; color:var(--teal); letter-spacing:.14em; text-transform:uppercase; }
+  .pill { position:absolute; padding:14px 30px; border-radius:999px; background:var(--teal); color:#fff; font-weight:700; font-size:34px; white-space:nowrap; }
+  .tile { position:absolute; background:#fff; border:2px solid var(--line); border-radius:14px; box-shadow:0 6px 16px rgba(29,43,54,.06); overflow:hidden; }
+  .bar { position:absolute; bottom:14px; width:14%; border-radius:4px 4px 0 0; background:var(--teal2); }
+  .center { display:flex; align-items:center; justify-content:center; }
+</style>
+</head>
+<body>
+<!-- House-style motion graphics plate. Times = VO seconds from timing.json (VO t=0 = MG t=0).
+     One <section class="clip"> per MG beat; image beats stay empty (Tesseract lays scene images on top).
+     Keep content within y 80–900; y > 940 is the subtitle zone. -->
+<div id="root" data-composition-id="main" data-start="0" data-width="1920" data-height="1080" data-duration="__VO_DURATION_PLUS_0.7__" data-fps="30">
+  <div class="bgdots"></div>
+
+  <!-- SAMPLE beat: replace. data-start/duration bracket the beat; fadeScene() handles in/out. -->
+  <section id="sA" class="clip" data-start="2.0" data-duration="6.0"><div id="A" class="abs" style="inset:0"></div></section>
+</div>
+
+<script>
+(function(){
+  const tl = gsap.timeline({ paused: true });
+  const C = { teal:"#2796A3", teal2:"#7CC6CE", ink:"#1D2B36", mute:"#8A99A6", line:"#DDE5EA", red:"#E25C5C", amber:"#F2A541", pale:"#E8F4F5" };
+  let uid = 0;
+  let seed = 7; function rnd(a,b){ seed = (seed*16807) % 2147483647; return a + Math.round((seed/2147483647)*(b-a)); }
+  function el(parent, cls, css, html){
+    const d = document.createElement("div");
+    d.id = "e" + (uid++);
+    if (cls) d.className = cls;
+    Object.assign(d.style, css || {});
+    if (html != null) d.innerHTML = html;
+    document.getElementById(parent) ? document.getElementById(parent).appendChild(d) : parent.appendChild(d);
+    return d;
+  }
+  function px(v){ return v + "px"; }
+  // mini chart tile of different kinds
+  function miniTile(parent, x, y, w, h, kind, color){
+    const t = el(parent, "tile", { left:px(x), top:px(y), width:px(w), height:px(h) });
+    const col = color || C.teal2;
+    if (kind === 0) { [0.45,0.7,0.55,0.9,0.65].forEach((v,i)=> el(t,"bar",{ left:(8+i*17)+"%", height:(v*(h-40))+"px", background:col })); }
+    else if (kind === 1) { t.innerHTML = '<svg width="100%" height="100%" viewBox="0 0 100 60" preserveAspectRatio="none"><polyline points="6,48 24,34 40,40 58,18 76,26 94,10" fill="none" stroke="'+col+'" stroke-width="3.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>'; }
+    else if (kind === 2) { el(t,"abs",{ left:"50%", top:"50%", width:px(h*0.56), height:px(h*0.56), marginLeft:px(-h*0.28), marginTop:px(-h*0.28), borderRadius:"50%", background:"conic-gradient("+col+" 0 38%, "+C.line+" 38% 62%, #BFD9DD 62% 100%)" }); }
+    else { for (let r=0;r<3;r++){ el(t,"abs",{ left:"12%", right:"12%", top:(22+r*22)+"%", height:"10%", borderRadius:"4px", background: r===0?col:C.line }); } }
+    return t;
+  }
+  function fadeScene(id, start, dur){
+    tl.fromTo("#"+id, { opacity:0 }, { opacity:1, duration:0.35, ease:"power2.out" }, start);
+    tl.to("#"+id, { opacity:0, duration:0.3, ease:"power2.in" }, start + dur - 0.35);
+  }
+  function popIn(node, t, extra){ tl.fromTo(node, Object.assign({ opacity:0, scale:0.85, y:20 }, extra && extra.from), Object.assign({ opacity:1, scale:1, y:0, duration:0.5, ease:"back.out(1.6)" }, extra && extra.to), t); }
+  function rise(node, t, d){ tl.fromTo(node, { opacity:0, y:30 }, { opacity:1, y:0, duration:d||0.55, ease:"power3.out" }, t); }
+  function out(node, t, d){ tl.to(node, { opacity:0, y:-20, duration:d||0.35, ease:"power2.in" }, t); }
+
+  /* ================= SAMPLE beat A (2.0 – 8.0) ================= */
+  fadeScene("A", 2.0, 6.0);
+  const tag = el("A","tag",{ left:"160px", top:"100px" },"Langkah 1");
+  const title = el("A","h",{ left:"160px", top:"145px", fontSize:"72px" },"Judul konsep");
+  rise(tag, 2.2); rise(title, 2.3);
+  const num = el("A","h center",{ left:"0", width:"1920px", top:"330px", fontSize:"240px", color:C.teal, lineHeight:"1" },"0");
+  const counter = { v:0 };
+  popIn(num, 3.0);
+  tl.to(counter, { v:15, duration:1.2, ease:"power2.out", onUpdate:()=>{ num.textContent = Math.round(counter.v); } }, 3.0);
+  const tiles = [];
+  for (let i=0;i<5;i++){ const t = miniTile("A", 380 + i*240, 620, 210, 150, i%4); tiles.push(t); popIn(t, 3.6 + i*0.08); }
+  const pill = el("A","pill",{ left:"960px", top:"830px" },"pesan kunci di sini");
+  tl.fromTo(pill, { opacity:0 }, { opacity:1, duration:0.4 }, 4.6);
+
+  document.querySelectorAll(".pill").forEach(p=>{ if(p.style.left==="960px") gsap.set(p,{xPercent:-50}); });
+  window.__timelines["main"] = tl;
+})();
+</script>
+</body>
+</html>
