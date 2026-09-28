@@ -23,7 +23,7 @@ def key():
 
 
 def get(url):
-    req = urllib.request.Request(url, headers={"Authorization": key(), "User-Agent": "learning-video-storytelling"})
+    req = urllib.request.Request(url, headers={"Authorization": key(), "User-Agent": "hpl-video-tcuc"})
     try:
         with urllib.request.urlopen(req, timeout=60) as r:
             return json.load(r)
@@ -100,7 +100,7 @@ def download(a):
     dest = dest_dir / f"{name}{ext}"
     if dest.exists():
         sys.exit(f"{dest} exists; choose another --name")
-    req = urllib.request.Request(it["download"], headers={"User-Agent": "learning-video-storytelling"})
+    req = urllib.request.Request(it["download"], headers={"User-Agent": "hpl-video-tcuc"})
     with urllib.request.urlopen(req, timeout=300) as r, open(dest, "wb") as f:
         while True:
             b = r.read(1 << 20)

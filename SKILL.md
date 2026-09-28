@@ -1,5 +1,5 @@
 ---
-name: learning-video-storytelling
+name: hpl-video-tcuc
 description: Produce a storytelling learning video (Telkom CorpU house style) from a scene folder — plain script or recorded VO, scene images, bumper in/out — into a 16:9 720p MP4 with white/teal HyperFrames motion graphics, breathing pauses, and teal pill subtitles assembled in Tesseract. Use for "buat learning video", "video storytelling dari script/VO", a DV/KB/SC scene folder, generating VO with ElevenLabs from a script, or batch-producing several scene folders in the same style.
 ---
 

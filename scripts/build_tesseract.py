@@ -23,7 +23,7 @@ def tsrct():
 
 
 def run(*args, capture=True):
-    r = subprocess.run([TS, *args], capture_output=True, text=True, env={**os.environ, "TESSERACT_SKILL": "learning-video-storytelling"})
+    r = subprocess.run([TS, *args], capture_output=True, text=True, env={**os.environ, "TESSERACT_SKILL": "hpl-video-tcuc"})
     if r.returncode:
         sys.exit(f"tsrct {args[0]} {args[1] if len(args) > 1 else ''} failed:\n{r.stdout}\n{r.stderr}")
     return r.stdout
