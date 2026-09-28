@@ -52,7 +52,7 @@ From `timing.json` build a beat table: time range · VO line · visual (scene im
 ```bash
 python3 "$SKILL/scripts/pexels.py" search --query "field worker checking phone" --kind video --out <work>/stock/beat07.json
 ```
-  Use short English queries. The command writes candidates and a numbered thumbnail sheet (`beat07.jpg`). Put the sheet in the storyboard with your pick. Stock clips are live-action, while supplied scenes are hand-drawn, so use stock for bridges or context and not for the main character. Aim for at most a few clips per video.
+  Use short English queries. The command writes candidates and a numbered thumbnail sheet (`beat07.jpg`). Put the sheet in the storyboard with your pick. Stock clips are live-action, while supplied scenes are hand-drawn, so use stock for bridges or context and not for the main character. Aim for at most a few clips per video (unless the visual cue asks for stock in every scene). When the beat is about a named character, the stock subject must match that character (gender, role); avoid ambiguous hands-only shots.
 Present the table (plus any stock sheets) and wait for approval or edits. After approval, download the chosen items:
 ```bash
 python3 "$SKILL/scripts/pexels.py" download --candidates <work>/stock/beat07.json --id <id> --dest <work>/stock --name field-phone
@@ -73,7 +73,7 @@ Write `<work>/assemble.json` (schema in `references/assemble-config.md`): bumper
 ```bash
 python3 "$SKILL/scripts/build_tesseract.py" <work>/assemble.json
 ```
-It creates `<Scene>.tsrct`, imports everything, lays out bumper in → VO section → bumper out, image crossfades + slow push-in, subtitles in the house preset, bumper gain, and exports `<Scene>.mp4` (720p30) + `Previews/Filmstrip.png`, printing loudness. Open the filmstrip and a couple of `tsrct preview` frames; check subtitles sit in the pill and no scene is blank. Target −16…−14 LUFS, peak ≤ −1 dBTP-ish; adjust `bumper_gain` if the bumpers dominate.
+It creates `<Scene>.tsrct`, imports everything, lays out bumper in → VO section → bumper out, image crossfades + slow push-in, subtitles in the house preset, bumper gain, and exports `<Scene>.mp4` (720p30) + `Previews/Filmstrip.png`, printing loudness. Open the filmstrip and a couple of `tsrct preview` frames; check subtitles sit in the pill and no scene is blank. Target −16…−14 LUFS, peak ≤ −1 dBTP-ish; adjust `bumper_gain` if the bumpers dominate, and `vo_gain` (default 0.6; mono VO gains ~3 dB in Tesseract) if the VO section is off.
 
 ## 6. Deliver
 

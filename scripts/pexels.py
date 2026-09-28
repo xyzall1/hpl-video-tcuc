@@ -76,15 +76,20 @@ def contact_sheet(items, path, title):
     rows = (len(items) + cols - 1) // cols or 1
     sheet = Image.new("RGB", (cols * tw, rows * (th + 28)), "white")
     dr = ImageDraw.Draw(sheet)
+    failed = 0
     for i, it in enumerate(items):
         try:
-            im = Image.open(io.BytesIO(urllib.request.urlopen(it["thumb"], timeout=30).read())).convert("RGB")
+            req = urllib.request.Request(it["thumb"], headers={"User-Agent": "Mozilla/5.0 (hpl-video-tcuc)"})  # CDN rejects UA-less requests
+            im = Image.open(io.BytesIO(urllib.request.urlopen(req, timeout=30).read())).convert("RGB")
             im.thumbnail((tw, th)); x, y = (i % cols) * tw, (i // cols) * (th + 28)
             sheet.paste(im, (x + (tw - im.width) // 2, y))
             label = f"{i+1}. {it['duration']}s" if it["kind"] == "video" else f"{i+1}."
             dr.text((x + 6, y + th + 6), f"{label}  id {it['id']}", fill=(29, 43, 54))
-        except Exception:
-            pass
+        except Exception as e:
+            failed += 1
+            print(f"  thumbnail {i+1} (id {it['id']}) failed: {e}", file=sys.stderr)
+    if failed:
+        print(f"  warning: {failed}/{len(items)} thumbnails missing from {path}", file=sys.stderr)
     sheet.save(path, quality=85)
     return path
 

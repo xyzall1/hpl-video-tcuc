@@ -159,7 +159,7 @@ def main(cfg_path):
                        "source": {"assetId": aid, "fit": "contain"}}); lid += 1
     # ---- VO
     layers.append({"type": "Audio", "id": lid, "name": "VO", "activeRange": {"start": O, "duration": VO}, "sourceRange": {"start": 0, "duration": VO},
-                   "sourceIntrinsicDuration": VO, "source": {"assetId": "vo"}, "volume": A.get("vo_gain", 1.0), "captionsEnabled": False})
+                   "sourceIntrinsicDuration": VO, "source": {"assetId": "vo"}, "volume": A.get("vo_gain", cfg.get("vo_gain", 0.6)), "captionsEnabled": False})
 
     doc["composition"]["layers"] = layers
     json.dump(doc, open(work / "editable.json", "w"), ensure_ascii=False, indent=1)

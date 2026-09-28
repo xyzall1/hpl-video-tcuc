@@ -10,7 +10,8 @@
 - Canvas 1920×1080, then export with `--resolution 720p`.
 
 ## Audio
-- The supplied bumpers are mastered hot (about −10 LUFS, peaks above 0 dBFS). Trim them to about 0.63 gain (−4 dB) so they match a −15 LUFS VO and do not clip.
+- The supplied bumpers are mastered hot (about −10 LUFS, peaks above 0 dBFS). Trim them to 0.5 gain (≈ −6 dB → about −16 LUFS) so they match the VO and do not clip.
+- A mono VO is played on both stereo channels in Tesseract, so it measures about +3 dB louder than the source file. Hence `vo_gain` 0.6 by default; measure the VO section (`ffmpeg -ss 30 -t 60 -i out.mp4 -af ebur128 -f null -`) and adjust.
 - Target about −16…−14 LUFS integrated and peak ≤ −1 dB. Measure with `ffmpeg -af ebur128=peak=true`.
 - Join VO segments as PCM WAV. Concatenating MP3s adds encoder padding per segment and drifts timing by about 25 ms each.
 
@@ -29,5 +30,7 @@
 
 ## Stock (Pexels)
 - Free to use under the Pexels license. Attribution is not required but is recorded in `credits.txt` (good practice for internal and training material). Do not use stock people in a way that implies they endorse Telkom or that they are real employees.
+- The Pexels image CDN rejects requests without a User-Agent (blank white contact sheet). `pexels.py` sends one and prints any thumbnail that fails; never present a blank sheet as candidates.
+- When a beat's subject is a named character, the stock person must match that character (e.g. a female protagonist → a woman on screen). Hands-only or ambiguous shots are not enough; check every pick.
 - `pexels.py` picks a landscape MP4 between 720p and 1080p. 4K is unnecessary for a 720p export and slow to download.
 - Live-action stock clashes with the hand-drawn scenes. Use it briefly for context, and let the white/teal motion graphics or a crossfade carry the transition.

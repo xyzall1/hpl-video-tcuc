@@ -19,7 +19,8 @@
   },
   "canvas": [1920, 1080],
   "export": { "resolution": "720p", "fps": 30 },
-  "bumper_gain": 0.63,
+  "bumper_gain": 0.5,
+  "vo_gain": 0.6,
   "image_fade_ms": 350,
   "image_push_in": [141, 148]
 }
