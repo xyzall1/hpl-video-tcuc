@@ -38,7 +38,9 @@ def parse_script(text):
 
 def tts(text, voice, model, fmt, settings, prev_text=None, next_text=None):
     body = {"text": text, "model_id": model, "voice_settings": settings}
-    if not model.startswith("eleven_v3"):  # request stitching is not supported on v3
+    locs = load_config()["elevenlabs"].get("pronunciation_dictionary_locators")
+    if locs: body["pronunciation_dictionary_locators"] = locs  # e.g. AI -> IPA eɪ aɪ (config.json)
+    if not model.startswith(("eleven_v3", "eleven_v4")):  # request stitching is not supported on v3/v4 (v4 untested with it)
         if prev_text: body["previous_text"] = prev_text
         if next_text: body["next_text"] = next_text
     req = urllib.request.Request(
@@ -106,8 +108,20 @@ def main():
 
     lst = seg_dir / "concat.txt"
     lst.write_text("".join(f"file '{Path(c).resolve()}'\n" for c in concat))
+    raw = seg_dir / "vo_raw.wav"
     subprocess.check_call(["ffmpeg", "-nostdin", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(lst),
-                           "-c:a", "pcm_s16le", str(out / "vo.wav")])  # assembly uses the WAV (sample-exact)
+                           "-c:a", "pcm_s16le", str(raw)])  # assembly uses the WAV (sample-exact)
+    # Normalise loudness so vo_gain behaves the same for every voice (raw ElevenLabs level varies by voice/model).
+    # Two-pass loudnorm in linear mode keeps timing and dynamics; the true-peak ceiling prevents clipping in the mix.
+    ln = cfg.get("vo_loudnorm", {"I": -16, "TP": -2, "LRA": 11})
+    lf = f"loudnorm=I={ln['I']}:TP={ln['TP']}:LRA={ln['LRA']}"
+    m = subprocess.run(["ffmpeg", "-nostdin", "-i", str(raw), "-af", lf + ":print_format=json", "-f", "null", "-"],
+                       capture_output=True, text=True).stderr
+    j = json.loads(m[m.rindex("{"):m.rindex("}") + 1])
+    lf += (f":measured_I={j['input_i']}:measured_TP={j['input_tp']}:measured_LRA={j['input_lra']}"
+           f":measured_thresh={j['input_thresh']}:offset={j['target_offset']}:linear=true")
+    subprocess.check_call(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", str(raw), "-af", lf,
+                           "-ar", "44100", "-ac", "1", "-c:a", "pcm_s16le", str(out / "vo.wav")])
     subprocess.check_call(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", str(out / "vo.wav"),
                            "-c:a", "libmp3lame", "-b:a", "192k", str(out / "vo.mp3")])  # for listening / sharing
     total = dur(out / "vo.wav")

@@ -73,7 +73,7 @@ Write `<work>/assemble.json` (schema in `references/assemble-config.md`): bumper
 ```bash
 python3 "$SKILL/scripts/build_tesseract.py" <work>/assemble.json
 ```
-It creates `<Scene>.tsrct`, imports everything, lays out bumper in → VO section → bumper out, image crossfades + slow push-in, subtitles in the house preset, bumper gain, and exports `<Scene>.mp4` (720p30) + `Previews/Filmstrip.png`, printing loudness. Open the filmstrip and a couple of `tsrct preview` frames; check subtitles sit in the pill and no scene is blank. Target −16…−14 LUFS, peak ≤ −1 dBTP-ish; adjust `bumper_gain` if the bumpers dominate, and `vo_gain` (default 0.6; mono VO gains ~3 dB in Tesseract) if the VO section is off.
+It creates `<Scene>.tsrct`, imports everything, lays out bumper in → VO section → bumper out, image crossfades + slow push-in, subtitles in the house preset, bumper gain, and exports `<Scene>.mp4` (720p30) + `Previews/Filmstrip.png`, printing loudness. Open the filmstrip and a couple of `tsrct preview` frames; check subtitles sit in the pill and no scene is blank. Target −16…−14 LUFS, peak ≤ −1 dBTP-ish; adjust `bumper_gain` if the bumpers dominate, and `vo_gain` (default 0.8, calibrated for the −16 LUFS normalised VO from `make_vo.py`; a supplied VO must be normalised first) if the VO section is off. The build runs in a local temp dir and copies results to `out_dir`, so cloud-synced folders (OneDrive) are safe.
 
 ## 6. Deliver
 
