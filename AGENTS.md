@@ -70,6 +70,14 @@ python3 "$SKILL/scripts/build_tesseract.py" <work>/assemble.json
 ```
 This produces `<Scene>.tsrct`, `<Scene>.mp4`, `Previews/Filmstrip.png`, and a loudness report. Target −16…−14 LUFS with peak ≤ −1 dB.
 
+### 5b. Background music (optional, Pixabay)
+Search Pixabay Music (e.g. "corporate explainer", "educational presentation") and offer only tracks **longer than the VO section**, with title, creator and duration. The user listens and picks; download the MP3 to `<work>/music/` and note the attribution in `<work>/music/credits.txt`. Then:
+```bash
+python3 "$SKILL/scripts/add_bgm.py" --video <work>/<Scene>.mp4 --vo <work>/vo/vo.wav --music <work>/music/<track>.mp3 \
+  --start <Bumper In seconds> --out <work>/<Scene>_bgm.mp4
+```
+The music plays only in the VO section (bumpers keep their own audio), fades in 2 s, keeps running 2.5 s past the last word and fades out into Bumper Out, sits at −22 LUFS and is lightly ducked under the VO (config `bgm`). Keep the music-less MP4 too.
+
 ### 6. Deliver
 Report the MP4, the `.tsrct`, the HyperFrames source, the duration, and anything approximate. On a revision, keep previous renders in `Versions/`.
 
