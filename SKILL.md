@@ -75,6 +75,15 @@ python3 "$SKILL/scripts/build_tesseract.py" <work>/assemble.json
 ```
 It creates `<Scene>.tsrct`, imports everything, lays out bumper in → VO section → bumper out, image crossfades + slow push-in, subtitles in the house preset, bumper gain, and exports `<Scene>.mp4` (720p30) + `Previews/Filmstrip.png`, printing loudness. Open the filmstrip and a couple of `tsrct preview` frames; check subtitles sit in the pill and no scene is blank. Target −16…−14 LUFS, peak ≤ −1 dBTP-ish; adjust `bumper_gain` if the bumpers dominate, and `vo_gain` (default 0.8, calibrated for the −16 LUFS normalised VO from `make_vo.py`; a supplied VO must be normalised first) if the VO section is off. The build runs in a local temp dir and copies results to `out_dir`, so cloud-synced folders (OneDrive) are safe.
 
+## 5b. Background music (optional, Pixabay)
+
+When the user wants a music bed: search Pixabay Music in the browser (themes like "corporate explainer", "educational presentation", "presentation background"), read each track page for its CDN mp3 URL and its duration (an `Audio` element's `loadedmetadata` works), and offer only tracks **longer than the VO section** so nothing loops. Show title · creator · duration; the user listens and picks, and the pick is their OK to download. Save to `<work>/music/` and write the attribution to `<work>/music/credits.txt` (Pixabay Content License). Then:
+```bash
+python3 "$SKILL/scripts/add_bgm.py" --video <work>/<Scene>.mp4 --vo <work>/vo/vo.wav --music <work>/music/<track>.mp3 \
+  --start <Bumper In seconds> --out <work>/<Scene>_bgm.mp4
+```
+It trims the track to the VO section only (bumpers keep their own audio), fades in 2 s / out 3 s, normalises the music to −26 LUFS (raised from −30 after user feedback: too quiet) and side-chain ducks it under the VO (config `bgm`). It prints loudness: keep integrated −16…−14 LUFS and peak ≤ −1 dB; if the music feels loud in pauses, lower `--music-lufs` (e.g. −32). `--music-offset` skips a slow intro. Keep the music-less MP4 as well.
+
 ## 6. Deliver
 
 Report the MP4, the `.tsrct` (editable), the HF source, duration, and anything approximate. On a revision, keep the previous render in `Versions/`.

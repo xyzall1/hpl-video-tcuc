@@ -2,9 +2,19 @@
   "elevenlabs": {
     "voice_id": null,
     "model_id": "eleven_v4",
-    "voice_settings": { "stability": 0.5, "similarity_boost": 0.75, "style": 0.0, "use_speaker_boost": true }
+    "voice_settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.0,
+      "use_speaker_boost": true
+    }
   },
-  "pauses": { "sentence": 0.4, "paragraph": 1.0, "lead_in": 0.3, "tail": 0.6 },
+  "pauses": {
+    "sentence": 0.4,
+    "paragraph": 1.0,
+    "lead_in": 0.3,
+    "tail": 0.6
+  },
   "subtitle": {
     "font": "assets/fonts/Poppins-Bold.ttf",
     "font_family": "Poppins",
@@ -17,11 +27,34 @@
     "center_y": 1000,
     "max_chars": 56
   },
-  "canvas": [1920, 1080],
-  "export": { "resolution": "720p", "fps": 30 },
+  "canvas": [
+    1920,
+    1080
+  ],
+  "export": {
+    "resolution": "720p",
+    "fps": 30
+  },
   "bumper_gain": 0.5,
   "vo_gain": 0.8,
-  "vo_loudnorm": { "I": -16, "TP": -2, "LRA": 11 },
+  "vo_loudnorm": {
+    "I": -16,
+    "TP": -2,
+    "LRA": 11
+  },
   "image_fade_ms": 350,
-  "image_push_in": [141, 148]
+  "image_push_in": [
+    141,
+    148
+  ],
+  "bgm": {
+    "music_lufs": -22.0,
+    "fade_in": 2.0,
+    "fade_out": 3.0,
+    "duck_threshold": 0.1,
+    "duck_ratio": 2.0,
+    "duck_release_ms": 600,
+    "music_offset": 0.0,
+    "tail": 2.5
+  }
 }
