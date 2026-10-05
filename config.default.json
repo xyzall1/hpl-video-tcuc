@@ -1,7 +1,7 @@
 {
   "elevenlabs": {
     "voice_id": null,
-    "model_id": "eleven_v3",
+    "model_id": "eleven_v4",
     "voice_settings": { "stability": 0.5, "similarity_boost": 0.75, "style": 0.0, "use_speaker_boost": true }
   },
   "pauses": { "sentence": 0.4, "paragraph": 1.0, "lead_in": 0.3, "tail": 0.6 },
@@ -20,7 +20,8 @@
   "canvas": [1920, 1080],
   "export": { "resolution": "720p", "fps": 30 },
   "bumper_gain": 0.5,
-  "vo_gain": 0.6,
+  "vo_gain": 0.8,
+  "vo_loudnorm": { "I": -16, "TP": -2, "LRA": 11 },
   "image_fade_ms": 350,
   "image_push_in": [141, 148]
 }

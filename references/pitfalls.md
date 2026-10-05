@@ -11,14 +11,19 @@
 
 ## Audio
 - The supplied bumpers are mastered hot (about −10 LUFS, peaks above 0 dBFS). Trim them to 0.5 gain (≈ −6 dB → about −16 LUFS) so they match the VO and do not clip.
-- A mono VO is played on both stereo channels in Tesseract, so it measures about +3 dB louder than the source file. Hence `vo_gain` 0.6 by default; measure the VO section (`ffmpeg -ss 30 -t 60 -i out.mp4 -af ebur128 -f null -`) and adjust.
+- A mono VO is played on both stereo channels in Tesseract, so it measures about +3 dB louder than the source file. `make_vo.py` normalises the VO to −16 LUFS / −2 dBTP first, and `vo_gain` 0.8 is calibrated for that. Measure the VO section (`ffmpeg -ss 30 -t 60 -i out.mp4 -af ebur128 -f null -`) and adjust.
 - Target about −16…−14 LUFS integrated and peak ≤ −1 dB. Measure with `ffmpeg -af ebur128=peak=true`.
 - Join VO segments as PCM WAV. Concatenating MP3s adds encoder padding per segment and drifts timing by about 25 ms each.
 
 ## Timing
 - Whisper transcripts are floored to whole seconds. Snap each line to a detected silence (`vo_pauses.py detect`). Two lines can snap to the same gap, so fix it by hand in `cuts.json`.
 - ElevenLabs `with-timestamps` gives per-character times, so cues are exact. Strip `[audio tags]` from subtitle text; `timing_lib` does this.
-- `eleven_v3` does not accept `previous_text` / `next_text`. `make_vo.py` only sends them for other models.
+- `eleven_v3` does not accept `previous_text` / `next_text`. `make_vo.py` does not send them for v3 or v4 (v4 untested with stitching).
+- Default model is `eleven_v4` (confirmed working, Sep 2026). The API key may lack `models_read`, so the model list cannot be queried; test with a real call instead.
+
+## Cloud-synced folders
+- Tesseract aborts with "source .tsrct file changed after it was opened" when the project lives in OneDrive/iCloud: the sync client touches the file mid-build. `build_tesseract.py` builds in a local temp dir and copies `.tsrct`, MP4 and filmstrip to `out_dir` at the end.
+- In the Claude Code sandbox, HyperFrames render and tsrct cannot start ffmpeg ("FFmpeg cannot start"). Run those commands with the sandbox disabled.
 
 ## HyperFrames
 - No `Math.random` or `gsap.utils.random`. Use the seeded `rnd(a, b)` from the template.

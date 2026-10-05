@@ -26,12 +26,12 @@ Times are seconds on the **final (padded) VO clock**. Motion graphics, scenes, a
     {"file": "../extra footage.mp4", "start": 40.0, "end": 46.0, "src_start": 2.0, "volume": 0.0, "push_in": false}
   ],
   "bumper_gain": 0.5,
-  "vo_gain": 0.6
+  "vo_gain": 0.8
 }
 ```
 - `scenes[].start/end` are VO seconds. Overlap each neighbouring motion-graphic scene fade by about 0.3 s so there is never a blank frame.
 - Images and footage are cover-scaled to the canvas automatically, whatever their size.
-- `vo_gain` defaults to 0.6 (config). Tesseract plays a mono VO on both stereo channels, which adds about +3 dB; at 1.0 an ElevenLabs VO (≈ −13.5 LUFS) comes out near −10.6 LUFS. 0.6 lands at about −15 LUFS. Re-measure and adjust per project.
+- `vo_gain` defaults to 0.8 (config) and assumes `vo.wav` is loudness-normalised to −16 LUFS / −2 dBTP (`make_vo.py` does this; config `vo_loudnorm`). With that input, 0.8 lands the VO section at about −15.4 LUFS, peak about −3.7 dB (measured on TC292-L1-T3, Sep 2026). Raw ElevenLabs level varies a lot per voice/model (Kennisa on eleven_v4 came out at −28 LUFS with the old 0.6 and no normalisation), so never skip the normalisation. A supplied VO (path B) is not normalised automatically: run the same loudnorm on it first. Re-measure per project.
 - Footage audio is muted by default (`volume: 0`). Set a value above 0 only if its sound belongs in the mix.
 
 ## config.json (personal, optional, next to config.default.json)

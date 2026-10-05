@@ -86,7 +86,7 @@ Struktur video: **Bumper In** (audio asli) → **Isi** (VO + motion graphic + sc
 
 ## ✨ Fitur utama
 
-- **🎙️ VO otomatis dari script.** Memakai ElevenLabs (default `eleven_v3`, voice bisa diatur) dengan dukungan *audio tags* dari tts-script-enhancer. Tag hanya memengaruhi suara dan otomatis dibuang dari subtitle.
+- **🎙️ VO otomatis dari script.** Memakai ElevenLabs (default `eleven_v4`, voice bisa diatur) dengan dukungan *audio tags* dari tts-script-enhancer. Tag hanya memengaruhi suara dan otomatis dibuang dari subtitle.
 - **🫁 Jeda napas natural.** Default +0,4 detik antarkalimat dan +1,0 detik antarparagraf atau pergantian topik. Berlaku untuk VO ElevenLabs maupun VO rekaman.
 - **🎯 Timing presisi.** Untuk VO ElevenLabs, subtitle dan animasi diselaraskan dengan timestamp per karakter. Untuk VO rekaman, timing dicocokkan ke jeda nyata di audio (±0,3 detik).
 - **🎨 Motion graphic editable.** HTML + GSAP di HyperFrames, dengan komponen siap pakai: counter angka, tile grafik mini, kartu, pill, mock dashboard, dan lainnya.
@@ -104,7 +104,7 @@ Semua script ada di `scripts/` dan bisa juga dijalankan manual dari Terminal.
 
 ### `make_vo.py`: membuat VO dari script (ElevenLabs)
 ```bash
-python3 scripts/make_vo.py --script script.txt --out-dir work/vo [--voice-id ID] [--model eleven_v3] \
+python3 scripts/make_vo.py --script script.txt --out-dir work/vo [--voice-id ID] [--model eleven_v4] \
         [--pause-sentence 0.4] [--pause-paragraph 1.0]
 ```
 - **Format script:** baris kosong menandai paragraf baru. Kalimat diakhiri `.`, `?`, atau `!`. Tag `[...]` boleh dipakai.
@@ -245,7 +245,7 @@ Buka Claude Code di folder scene, lalu minta dengan bahasa biasa. Contoh:
 | Kunci | Default | Fungsi |
 |---|---|---|
 | `elevenlabs.voice_id` | – | Voice default (wajib untuk jalur script) |
-| `elevenlabs.model_id` | `eleven_v3` | Model TTS (v3 mendukung audio tags) |
+| `elevenlabs.model_id` | `eleven_v4` | Model TTS (v3/v4 mendukung audio tags) |
 | `pauses.sentence` / `paragraph` | 0.4 / 1.0 s | Jeda napas |
 | `pauses.lead_in` / `tail` | 0.3 / 0.6 s | Hening di awal dan akhir VO |
 | `subtitle.*` | pill `#2796A3`, Poppins Bold 44, y = 1000 | Preset subtitle |

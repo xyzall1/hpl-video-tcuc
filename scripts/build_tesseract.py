@@ -4,7 +4,7 @@
 Layout: bumper in -> [MG plate + scene images + subtitles + VO] -> bumper out.
 All scene/cue times in assemble.json and timing.json are VO seconds (VO t=0 = end of bumper in).
 """
-import json, os, shutil, subprocess, sys, time
+import json, os, shutil, subprocess, sys, tempfile, time
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -57,9 +57,14 @@ def main(cfg_path):
         shutil.move(str(proj), v / f"{name}_{stamp}.tsrct")
         if (out_dir / f"{name}.mp4").exists():
             shutil.move(str(out_dir / f"{name}.mp4"), v / f"{name}_{stamp}.mp4")
+    # Build in a local temp dir, then copy results to out_dir: cloud-synced folders (OneDrive, iCloud)
+    # touch the .tsrct mid-build and tsrct aborts with "source .tsrct file changed after it was opened".
+    final_dir = out_dir
+    out_dir = Path(tempfile.mkdtemp(prefix=f"tsrct-{name}-"))
+    proj = out_dir / f"{name}.tsrct"
     work = out_dir / ".tesseract-work"; work.mkdir(parents=True, exist_ok=True)
     W, H = cfg["canvas"]
-    sub = cfg["subtitle"]
+    sub = {**cfg["subtitle"], **A.get("subtitle", {})}  # per-project override
     timing = json.load(open(P(A["timing"])))
 
     # ---- import
@@ -175,6 +180,12 @@ def main(cfg_path):
         "--interval-ms", str(max(4000, TOTAL // 24 // 1000 * 1000)), "--output", str(out_dir / "Previews/Filmstrip.png"))
     loud = subprocess.run(["ffmpeg", "-nostdin", "-i", str(mp4), "-af", "ebur128=peak=true", "-f", "null", "-"], capture_output=True, text=True).stderr
     summary = [l.strip() for l in loud.splitlines() if l.strip().startswith(("I:", "Peak:"))][-2:]
+    (final_dir / "Previews").mkdir(parents=True, exist_ok=True)
+    for src, dst in [(proj, final_dir / proj.name), (mp4, final_dir / mp4.name),
+                     (out_dir / "Previews/Filmstrip.png", final_dir / "Previews/Filmstrip.png")]:
+        (shutil.copytree if src.is_dir() else shutil.copy2)(src, dst)
+    shutil.rmtree(out_dir, ignore_errors=True)
+    out_dir, proj, mp4 = final_dir, final_dir / proj.name, final_dir / mp4.name
     print(json.dumps({"project": str(proj), "video": str(mp4), "duration_s": TOTAL / 1000, "layers": len(layers),
                       "loudness": summary, "filmstrip": str(out_dir / "Previews/Filmstrip.png")}, indent=1))
 
