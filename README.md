@@ -38,6 +38,7 @@ Untuk setiap folder scene (misal `DV3 KB2/SC3/`), skill membuat subfolder `<Scen
 | `hf/index.html` | Sumber motion graphic HyperFrames, bisa diedit lalu dirender ulang |
 | `vo/vo.wav`, `vo/timing.json` | VO dengan jeda napas dan data timing per kalimat |
 | `stock/` + `credits.txt` | Footage Pexels yang dipakai beserta atribusinya |
+| `<Scene>_bgm.mp4`, `music/` + `credits.txt` | (Opsional) Video final dengan backsound Pixabay, lagu yang dipakai, dan atribusinya |
 | `Previews/Filmstrip.png` | Ringkasan visual seluruh video |
 | `Versions/` | Arsip hasil sebelumnya setiap kali ada revisi |
 
@@ -65,6 +66,12 @@ Struktur video: **Bumper In** (audio asli) → **Isi** (VO + motion graphic + sc
                                                                       │
                                                                       ▼
                                               MP4 720p + proyek .tsrct
+                                                                      │
+                                                                      ▼ (opsional)
+                                   Pixabay Music: backsound + fade + ducking
+                                                                      │
+                                                                      ▼
+                                                           <Scene>_bgm.mp4
 ```
 
 ✋ = **titik konfirmasi**. Claude berhenti dan menunggu persetujuanmu di dua titik ini. Langkah lainnya berjalan otomatis.
@@ -78,6 +85,7 @@ Struktur video: **Bumper In** (audio asli) → **Isi** (VO + motion graphic + sc
 | 3 | Motion graphic | Dibangun dari template house style di HyperFrames. Momen kunci animasi jatuh tepat pada kata yang diucapkan. |
 | 4 | Preview ✋ | Contact sheet satu frame per beat. Setelah disetujui, motion graphic dirender. |
 | 5 | Perakitan | Satu script merakit semuanya di Tesseract lalu export, filmstrip, dan cek loudness. |
+| 5b | Backsound (opsional) | Lagu Pixabay bertema presentasi/learning yang lebih panjang dari bagian VO dipilih pengguna, lalu dicampur di bawah VO: hanya di bagian isi, fade in/out, volume selalu di bawah narasi. |
 | 6 | Serah terima | Laporan file hasil, durasi, dan hal-hal yang masih bersifat perkiraan. |
 
 **Mode batch:** beberapa folder scene (SC1, SC2, …) bisa diproses sekaligus. Semua storyboard disetujui dalam satu kali konfirmasi, begitu juga semua preview.
@@ -94,6 +102,7 @@ Struktur video: **Bumper In** (audio asli) → **Isi** (VO + motion graphic + sc
 - **💬 Subtitle house style.** Pill teal `#2796A3`, teks putih Poppins Bold, maksimal satu baris, dipecah di koma. Typo dan penulisan nama dirapikan.
 - **🔊 Mix audio aman.** Gain bumper dikoreksi karena bumper bawaannya clipping. Target loudness sekitar −16…−14 LUFS dengan peak ≤ −1 dB.
 - **✏️ Hasil tetap bisa diedit.** Proyek `.tsrct` dan sumber HyperFrames disimpan. Revisi tidak perlu mulai dari nol, dan versi lama diarsipkan.
+- **🎵 Backsound musik dari Pixabay (opsional).** Musik bertema presentasi/learning dari Pixabay Music mengisi bagian isi video saja (bumper tetap memakai audionya sendiri), dengan fade in 2 detik, fade out halus ke Bumper Out, dan volume yang selalu di bawah VO.
 - **🔐 Aman untuk dibagikan.** API key tidak pernah disimpan di repo. Tiap anggota tim memakai key dan voice pilihannya sendiri.
 
 ---
@@ -141,6 +150,20 @@ python3 scripts/build_tesseract.py work/assemble.json
 - **Subtitle:** pill house style dengan lebar pill otomatis mengikuti panjang teks.
 - **Export:** MP4 720p30, filmstrip, dan ringkasan loudness.
 - Format `assemble.json` dijelaskan di [`references/assemble-config.md`](references/assemble-config.md).
+
+### `add_bgm.py`: backsound musik dari Pixabay (opsional)
+Menambahkan musik latar ke video yang sudah dirakit.
+- **Sumber musik:** [Pixabay Music](https://pixabay.com/music/). Agent mencari lagu bertema presentasi atau learning (mis. *corporate explainer*, *educational presentation*) dan hanya menawarkan lagu yang **lebih panjang dari bagian VO**, supaya tidak perlu di-loop. Pengguna mendengarkan dulu lalu memilih, baru lagunya diunduh ke `<work>/music/`.
+- **Penempatan:** musik hanya berbunyi dari akhir Bumper In sampai awal Bumper Out. Bumper tetap memakai audio aslinya.
+- **Fade:** fade in 2 detik, lalu musik tetap berbunyi 2,5 detik setelah kata terakhir dan fade out halus ke Bumper Out.
+- **Volume:** musik disetel ke −22 LUFS dan diberi *ducking* ringan, jadi tetap terdengar saat narator bicara tapi tidak pernah menutupi VO. Hasil akhir tetap di −16…−14 LUFS.
+- **Kredit:** judul, kreator, dan link lagu dicatat di `<work>/music/credits.txt`.
+
+```bash
+python3 scripts/add_bgm.py --video work/SC3.mp4 --vo work/vo/vo.wav --music work/music/track.mp3 \
+  --start <durasi Bumper In> --out work/SC3_bgm.mp4 [--music-lufs -22] [--music-offset 0]
+```
+Video tanpa musik tetap disimpan, jadi musik bisa diganti kapan saja.
 
 ### `timing_lib.py`: helper bersama
 Berisi pemuat konfigurasi (default + pribadi), pembersih tag audio, dan pemecah subtitle. Subtitle dipecah di koma lalu diseimbangkan per kata, dan waktu tiap potongan diambil dari data per karakter bila tersedia.
@@ -252,6 +275,11 @@ Buka Claude Code di folder scene, lalu minta dengan bahasa biasa. Contoh:
 | `subtitle.max_chars` | 56 | Panjang maksimum satu baris subtitle |
 | `export.resolution` / `fps` | 720p / 30 | Output video |
 | `bumper_gain` | 0.63 (≈ −4 dB) | Koreksi volume bumper |
+| `bgm.music_lufs` | −22 | Volume backsound sebelum ducking (makin kecil angkanya makin pelan, mis. −26) |
+| `bgm.fade_in` / `fade_out` | 2 / 3 s | Fade in dan fade out backsound |
+| `bgm.tail` | 2,5 s | Lama musik tetap berbunyi setelah kata terakhir |
+| `bgm.duck_ratio` / `duck_threshold` | 2 / 0.1 | Kekuatan ducking saat narator bicara (ratio lebih besar = musik lebih ditekan) |
+| `bgm.music_offset` | 0 s | Lewati intro lagu yang terlalu pelan |
 
 ---
 
@@ -280,6 +308,8 @@ Detail lengkap ada di [`references/house-style.md`](references/house-style.md).
 | `PEXELS_API_KEY is not set` | Simpan key Pexels (lihat bagian Instalasi). |
 | Tesseract `missing_fonts` | Font tidak kompatibel dengan renderer. Pakai Poppins atau Inter (lihat `pitfalls.md`). |
 | Audio clipping di bumper | Turunkan `bumper_gain`. |
+| Backsound terlalu pelan / terlalu keras | Atur `--music-lufs` (mis. −20 lebih keras, −26 lebih pelan) atau `bgm.music_lufs` di `config.json`. |
+| `Music is shorter than the VO section` | Pilih lagu Pixabay yang lebih panjang dari bagian VO. |
 | `tsrct not found` | Instal Tesseract CLI sesuai skill `tesseract-video`, atau set env `TSRCT`. |
 
 Daftar lengkap jebakan teknis ada di [`references/pitfalls.md`](references/pitfalls.md).
@@ -298,6 +328,7 @@ Skill ini dibangun di atas karya dan layanan berikut:
 | **tts-script-enhancer** (by [@entuds](https://github.com/entuds)) | Skill untuk menambahkan audio tags ke script tanpa mengubah kata | Skill buatan pemilik repo ini |
 | **ElevenLabs** | Text-to-speech dengan timestamp per karakter | [elevenlabs.io](https://elevenlabs.io/) |
 | **Pexels** | Footage dan foto stock gratis | [pexels.com](https://www.pexels.com/), [lisensi](https://www.pexels.com/license/) |
+| **Pixabay Music** | Backsound musik bebas royalti untuk video learning | [pixabay.com/music](https://pixabay.com/music/), [Content License](https://pixabay.com/service/license-summary/) |
 | **GSAP** (GreenSock) | Runtime animasi di HyperFrames | [gsap.com](https://gsap.com/) |
 | **FFmpeg** | Olah dan analisis audio/video | [ffmpeg.org](https://ffmpeg.org/) |
 | **Plus Jakarta Sans** (Tokotype) | Font motion graphic | [SIL OFL 1.1](assets/fonts/OFL-PlusJakartaSans.txt) |
