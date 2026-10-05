@@ -7,6 +7,7 @@ Skill ini menggabungkan beberapa tool:
 - **HyperFrames** untuk motion graphic
 - **Pexels** untuk footage stock
 - **Tesseract** untuk perakitan dan export
+- **Pixabay** untuk backsound music
 
 Alurnya dijaga agar tiap video punya gaya yang sama: nuansa putih, aksen teal `#2796A3`, dan subtitle berbentuk pill.
 
