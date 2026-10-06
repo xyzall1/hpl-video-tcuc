@@ -75,7 +75,7 @@ def main():
         f"[m][key]sidechaincompress=threshold={a.duck_threshold}:ratio={a.duck_ratio}:attack=30:release={a.duck_release}[duck];"
         f"[duck]adelay={ms}|{ms},apad[bed];"
         f"[0:a]aresample=48000:async=1:first_pts=0,aformat=sample_rates=48000:channel_layouts=stereo[main];"
-        f"[main][bed]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.89[aout]"
+        f"[main][bed]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.84:level=disabled[aout]"
     )
     cmd = ["ffmpeg", "-y", "-v", "error", "-i", a.video, "-i", a.vo, "-i", a.music,
            "-filter_complex", fc, "-map", "0:v", "-map", "[aout]",
