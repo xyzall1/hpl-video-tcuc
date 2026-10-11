@@ -82,7 +82,7 @@ When the user wants a music bed: search Pixabay Music in the browser (themes lik
 python3 "$SKILL/scripts/add_bgm.py" --video <work>/<Scene>.mp4 --vo <work>/vo/vo.wav --music <work>/music/<track>.mp3 \
   --start <Bumper In seconds> --out <work>/<Scene>_bgm.mp4
 ```
-It trims the track to the VO section only (bumpers keep their own audio), fades in 2 s / out 3 s, normalises the music to −26 LUFS (raised from −30 after user feedback: too quiet) and side-chain ducks it under the VO (config `bgm`). It prints loudness: keep integrated −16…−14 LUFS and peak ≤ −1 dB; if the music feels loud in pauses, lower `--music-lufs` (e.g. −32). `--music-offset` skips a slow intro. Keep the music-less MP4 as well.
+It trims the track to the VO section only (bumpers keep their own audio), fades in 2 s / out 3 s, normalises the music to −22 LUFS (config `bgm.music_lufs`; earlier −30 and −26 were too quiet per user feedback) and lightly side-chain ducks it under the VO (config `bgm`: threshold 0.1, ratio 2.0, release 600 ms). It prints loudness: keep integrated −16…−14 LUFS and peak ≤ −1 dB; if the music feels loud in pauses, lower `--music-lufs` (e.g. −24 to −26). `--music-offset` skips a slow intro. Keep the music-less MP4 as well.
 
 ## 6. Deliver
 
