@@ -275,7 +275,8 @@ Buka Claude Code di folder scene, lalu minta dengan bahasa biasa. Contoh:
 | `subtitle.*` | pill `#2796A3`, Poppins Bold 44, y = 1000 | Preset subtitle |
 | `subtitle.max_chars` | 56 | Panjang maksimum satu baris subtitle |
 | `export.resolution` / `fps` | 720p / 30 | Output video |
-| `bumper_gain` | 0.63 (≈ −4 dB) | Koreksi volume bumper |
+| `bumper_gain` | 0.5 (≈ −6 dB) | Koreksi volume bumper |
+| `vo_gain` | 0.8 | Volume VO, dikalibrasi untuk VO yang sudah dinormalisasi ke −16 LUFS |
 | `bgm.music_lufs` | −22 | Volume backsound sebelum ducking (makin kecil angkanya makin pelan, mis. −26) |
 | `bgm.fade_in` / `fade_out` | 2 / 3 s | Fade in dan fade out backsound |
 | `bgm.tail` | 2,5 s | Lama musik tetap berbunyi setelah kata terakhir |
