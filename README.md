@@ -50,7 +50,7 @@ Struktur video: **Bumper In** (audio asli) → **Isi** (VO + motion graphic + sc
 ## 🔄 Alur kerja
 
 ```
- script.txt ──► [tts-script-enhancer] ──► ElevenLabs ──┐
+ script.txt ──► [tanpa tag audio] ──────► ElevenLabs ──┐
                                                        ├──► vo.wav + timing.json
  VO rekaman + transkrip ──► deteksi & sisip jeda ──────┘              │
                                                                       ▼
