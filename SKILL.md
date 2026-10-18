@@ -10,7 +10,7 @@ Pipeline: **script/VO → timing.json → storyboard ✋ → HyperFrames motion 
 
 Skill root = the directory containing this file (`$SKILL`). Work inside the scene folder in a new subfolder `<SceneName>_Video/` (claim it with `mkdir` without `-p`; never overwrite). Keep the user's source files untouched.
 
-Load these skills as you reach their step: `hyperframes` + `hyperframes-core` (motion graphics), `tesseract-video` (assembly; its installation reference pins the CLI version), `tts-script-enhancer` (optional audio tags). Read `references/house-style.md` before designing and `references/pitfalls.md` before assembling.
+Load these skills as you reach their step: `hyperframes` + `hyperframes-core` (motion graphics), `tesseract-video` (assembly; its installation reference pins the CLI version). Read `references/house-style.md` before designing and `references/pitfalls.md` before assembling.
 
 ## 0. Inventory the scene folder
 
@@ -23,14 +23,14 @@ Ask only what is missing and changes the result (e.g. no bumper found, script an
 
 ## 1A. Generate VO with ElevenLabs
 
-1. Optionally run `tts-script-enhancer` on the plain script to add voice-only tags (`[sighs]`, emphasis). Show the enhanced script; do not change words.
+1. **No audio tags.** Feed ElevenLabs a clean script: remove every `[...]` tag (`[short pause]`, `[relieved]`, `[firmly]`, `[engaged]`, `[sighs]`…) and do not run `tts-script-enhancer` for this series. ElevenLabs fills tags with breaths/throat-clears that reviewers hear as "uhuk". Make pauses with punctuation (comma, period, ellipsis) and with the breathing pauses inserted at assembly (step 1A/config `pauses`). Do not change words.
 2. Voice: use `voice_id` from `$SKILL/config.json`, else ask the user once (they may pick via the connector's `creative_list_voices`) and suggest saving it in config.json.
 3. The API key comes from env `ELEVENLABS_API_KEY` (or `~/.config/elevenlabs/key`). Never ask the user to paste a key in chat, never print or write it into project files. If missing, tell the user how to set it (`export ELEVENLABS_API_KEY=...` in their shell profile) and stop.
 4. Run:
 ```bash
 python3 "$SKILL/scripts/make_vo.py" --script script_enhanced.txt --out-dir <work>/vo --voice-id <id>
 ```
-Script format: blank line = paragraph; sentences end with `.?!`. The tool synthesizes per sentence, joins with breathing pauses (0.4 s sentence / 1.0 s paragraph, config), and writes `vo.wav` (+ `vo.mp3` copy) + `timing.json` with exact per-sentence and subtitle-cue times (tags stripped from subtitles). Listen-check a few joins (`ffplay`/afplay are fine) before continuing.
+Script format: blank line = paragraph; sentences end with `.?!`. The tool synthesizes per sentence, joins with breathing pauses (0.4 s sentence / 1.0 s paragraph, config), and writes `vo.wav` (+ `vo.mp3` copy) + `timing.json` with exact per-sentence and subtitle-cue times (tags stripped from subtitles). Listen-check **every sentence** (`ffplay`/afplay are fine) for coughs, breaths or throat-clears ("uhuk") before continuing; regenerate that sentence, or cut the noise, if any is heard.
 
 ## 1B. Supplied VO: add breathing pauses
 
@@ -52,7 +52,7 @@ From `timing.json` build a beat table: time range · VO line · visual (scene im
 ```bash
 python3 "$SKILL/scripts/pexels.py" search --query "field worker checking phone" --kind video --out <work>/stock/beat07.json
 ```
-  Use short English queries. The command writes candidates and a numbered thumbnail sheet (`beat07.jpg`). Put the sheet in the storyboard with your pick. Stock clips are live-action, while supplied scenes are hand-drawn, so use stock for bridges or context and not for the main character. Aim for at most a few clips per video (unless the visual cue asks for stock in every scene). When the beat is about a named character, the stock subject must match that character (gender, role); avoid ambiguous hands-only shots.
+  Use short English queries. The command writes candidates and a numbered thumbnail sheet (`beat07.jpg`). **Reuse cap: one Pexels item may be used in at most 2 videos** (user rule, Oct 2026). `pexels.py` counts uses from every `stock/credits.txt` in the workspace (`--usage-root`/`HPL_STOCK_ROOT` to override), hides capped items from search, and refuses to download them. Downloads that ffprobe reports without a frame count (fragmented MP4, which Tesseract rejects with "video needs a positive duration") are re-encoded automatically to `<name>-fix.mp4`; pick a different item or try a new query. Within one video, don't repeat the same clip either. Put the sheet in the storyboard with your pick. Stock clips are live-action, while supplied scenes are hand-drawn, so use stock for bridges or context and not for the main character. Aim for at most a few clips per video (unless the visual cue asks for stock in every scene). When the beat is about a named character, the stock subject must match that character (gender, role); avoid ambiguous hands-only shots.
 Present the table (plus any stock sheets) and wait for approval or edits. After approval, download the chosen items:
 ```bash
 python3 "$SKILL/scripts/pexels.py" download --candidates <work>/stock/beat07.json --id <id> --dest <work>/stock --name field-phone
@@ -61,11 +61,11 @@ python3 "$SKILL/scripts/pexels.py" download --candidates <work>/stock/beat07.jso
 
 ## 3. Motion graphics (HyperFrames)
 
-Copy `$SKILL/assets/hf-template/` to `<work>/hf/` and `$SKILL/assets/fonts/` to `<work>/hf/fonts/`. The template already holds the house style, helpers (`el`, `miniTile`, `popIn`, `rise`, `out`, `fadeScene`, seeded `rnd`) and one sample scene — replace the sample with one `<section class="clip">` per MG beat, all times in **VO seconds from timing.json** (VO t=0 = MG t=0). Set root `data-duration` = VO duration + 0.7. Leave image beats as plain background; Tesseract lays the images on top. Keep content inside y 80–900 (subtitle zone below). Then `npx hyperframes check` until 0 errors (fade-frame contrast warnings are fine).
+Copy `$SKILL/assets/hf-template/` to `<work>/hf/` and `$SKILL/assets/fonts/` to `<work>/hf/fonts/`. The template already holds the house style, helpers (`el`, `miniTile`, `popIn`, `rise`, `out`, `fadeScene`, seeded `rnd`) and one sample scene — replace the sample with one `<section class="clip">` per MG beat, all times in **VO seconds from timing.json** (VO t=0 = MG t=0). Set root `data-duration` = VO duration + 0.7. Leave image beats as plain background; Tesseract lays the images on top. Keep content inside y 80–900 (subtitle zone below). Follow the **Layout precision** and **Cue timing** rules in `references/house-style.md` (flex/grid with one `gap`, groups centred on the canvas, arrows computed from the elements they connect, every reveal timed to its word and held until the beat ends). Then `npx hyperframes check` until 0 errors (fade-frame contrast warnings are fine).
 
 ## 4. Preview ✋
 
-`npx hyperframes snapshot --no-end --at <one time per beat>` and show the contact sheet(s) to the user (send the image). Fix feedback, then `npx hyperframes render -o <work>/mg.mp4 -q delivery --quiet`.
+`npx hyperframes snapshot --no-end --at <one time per beat>` — take, per MG beat, one frame just after the last element enters and one just before the beat ends. Self-check every frame first: equal spacing, group centred, arrows touching both ends, nothing missing (vanished early) or showing before its word. Fix, re-snapshot, then show the contact sheet(s) to the user (send the image). Fix feedback, then `npx hyperframes render -o <work>/mg.mp4 -q delivery --quiet`.
 
 ## 5. Assemble in Tesseract
 
@@ -73,16 +73,18 @@ Write `<work>/assemble.json` (schema in `references/assemble-config.md`): bumper
 ```bash
 python3 "$SKILL/scripts/build_tesseract.py" <work>/assemble.json
 ```
-It creates `<Scene>.tsrct`, imports everything, lays out bumper in → VO section → bumper out, image crossfades + slow push-in, subtitles in the house preset, bumper gain, and exports `<Scene>.mp4` (720p30) + `Previews/Filmstrip.png`, printing loudness. Open the filmstrip and a couple of `tsrct preview` frames; check subtitles sit in the pill and no scene is blank. Target −16…−14 LUFS, peak ≤ −1 dBTP-ish; adjust `bumper_gain` if the bumpers dominate, and `vo_gain` (default 0.8, calibrated for the −16 LUFS normalised VO from `make_vo.py`; a supplied VO must be normalised first) if the VO section is off. The build runs in a local temp dir and copies results to `out_dir`, so cloud-synced folders (OneDrive) are safe.
+It creates `<Scene>.tsrct`, imports everything, lays out bumper in → VO section → bumper out, image crossfades + slow push-in, subtitles in the house preset, bumper gain, and exports `<Scene>.mp4` (720p30) + `Previews/Filmstrip.png`, printing loudness. Open the filmstrip and a couple of `tsrct preview` frames; check subtitles sit in the pill and no scene is blank. Also scan the VO section at 2 fps for near-uniform frames above the subtitle zone (std < 4 on a 160×90 grey downscale); any run ≥ 0.6 s that is not a scene fade means a beat starts before its first element or a stock window ends too early — start the first element on the sentence's opening word, or extend the stock clip. Target −16…−14 LUFS, peak ≤ −1 dBTP-ish; adjust `bumper_gain` if the bumpers dominate, and `vo_gain` (default 0.8, calibrated for the −16 LUFS normalised VO from `make_vo.py`; a supplied VO must be normalised first) if the VO section is off. The build runs in a local temp dir and copies results to `out_dir`, so cloud-synced folders (OneDrive) are safe.
 
 ## 5b. Background music (optional, Pixabay)
 
-When the user wants a music bed: search Pixabay Music in the browser (themes like "corporate explainer", "educational presentation", "presentation background"), read each track page for its CDN mp3 URL and its duration (an `Audio` element's `loadedmetadata` works), and offer only tracks **longer than the VO section** so nothing loops. Show title · creator · duration; the user listens and picks, and the pick is their OK to download. Save to `<work>/music/` and write the attribution to `<work>/music/credits.txt` (Pixabay Content License). Then:
+**Default track for this series:** "Educational Tutorial Presentation Music" by ViacheslavStarostin (3:26, Pixabay Content License, https://pixabay.com/music/electronic-educational-tutorial-presentation-music-381788/). Use it unless the VO section is longer than the track or the user asks for another; it replaces the earlier "Corporate Explainer Video" (alex-morgan), which reviewers found unsuitable for learning videos. Ask before the first download into a project.
+
+When another track is needed: search Pixabay Music in the browser (themes like "corporate explainer", "educational presentation", "presentation background"), read each track page for its CDN mp3 URL and its duration (an `Audio` element's `loadedmetadata` works), and offer only tracks **longer than the VO section** so nothing loops. Show title · creator · duration; the user listens and picks, and the pick is their OK to download. Save to `<work>/music/` and write the attribution to `<work>/music/credits.txt` (Pixabay Content License). Then:
 ```bash
 python3 "$SKILL/scripts/add_bgm.py" --video <work>/<Scene>.mp4 --vo <work>/vo/vo.wav --music <work>/music/<track>.mp3 \
   --start <Bumper In seconds> --out <work>/<Scene>_bgm.mp4
 ```
-It trims the track to the VO section only (bumpers keep their own audio), fades in 2 s / out 3 s, normalises the music to −22 LUFS (config `bgm.music_lufs`; earlier −30 and −26 were too quiet per user feedback) and lightly side-chain ducks it under the VO (config `bgm`: threshold 0.1, ratio 2.0, release 600 ms). It prints loudness: keep integrated −16…−14 LUFS and peak ≤ −1 dB; if the music feels loud in pauses, lower `--music-lufs` (e.g. −24 to −26). `--music-offset` skips a slow intro. Keep the music-less MP4 as well.
+It trims the track to the VO section only (bumpers keep their own audio), fades in 2 s / out 3 s, normalises the music to −26 LUFS (config `bgm.music_lufs`; user set this after hearing −22 on the DOOH video, Oct 2026 — −22 was too loud with the default track, −30 too quiet) and lightly side-chain ducks it under the VO (config `bgm`: threshold 0.1, ratio 2.0, release 600 ms). It prints loudness: keep integrated −16…−14 LUFS and peak ≤ −1 dB; if the music feels loud in pauses, lower `--music-lufs` (e.g. −28); if too quiet, raise it (−24). `--music-offset` skips a slow intro. Keep the music-less MP4 as well.
 
 ## 6. Deliver
 

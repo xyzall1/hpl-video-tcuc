@@ -80,7 +80,7 @@ Struktur video: **Bumper In** (audio asli) → **Isi** (VO + motion graphic + sc
 | # | Tahap | Yang terjadi |
 |---|---|---|
 | 0 | Inventaris | Claude memeriksa isi folder (script/VO, transkrip, bumper, gambar, footage), membaca durasi, dan **melihat setiap gambar** untuk memahami isinya. |
-| 1A | VO dari script | Script bisa diperkaya tag suara (misalnya `[sighs]`) lalu dibuat per kalimat di ElevenLabs. Hasilnya disambung dengan jeda napas, dan timing tiap huruf tercatat. |
+| 1A | VO dari script | Script dikirim **tanpa tag audio** (tag memicu suara napas/"uhuk"), lalu dibuat per kalimat di ElevenLabs; jeda dari tanda baca dan jeda napas saat perakitan. Hasilnya disambung dengan jeda napas, dan timing tiap huruf tercatat. |
 | 1B | VO rekaman | Jeda antarkalimat dideteksi dari audio dan dicocokkan dengan transkrip. Jeda napas disisipkan tanpa mengubah kecepatan bicara. |
 | 2 | Storyboard ✋ | Tabel beat berisi waktu, kalimat VO, dan visual (scene gambar, motion graphic, atau stock Pexels), lengkap dengan lembar thumbnail kandidat stock. |
 | 3 | Motion graphic | Dibangun dari template house style di HyperFrames. Momen kunci animasi jatuh tepat pada kata yang diucapkan. |
@@ -95,7 +95,7 @@ Struktur video: **Bumper In** (audio asli) → **Isi** (VO + motion graphic + sc
 
 ## ✨ Fitur utama
 
-- **🎙️ VO otomatis dari script.** Memakai ElevenLabs (default `eleven_v4`, voice bisa diatur) dengan dukungan *audio tags* dari tts-script-enhancer. Tag hanya memengaruhi suara dan otomatis dibuang dari subtitle.
+- **🎙️ VO otomatis dari script.** Memakai ElevenLabs (default `eleven_v4`, voice bisa diatur) tanpa *audio tags* (tag membuat ElevenLabs menambahkan suara napas/batuk).
 - **🫁 Jeda napas natural.** Default +0,4 detik antarkalimat dan +1,0 detik antarparagraf atau pergantian topik. Berlaku untuk VO ElevenLabs maupun VO rekaman.
 - **🎯 Timing presisi.** Untuk VO ElevenLabs, subtitle dan animasi diselaraskan dengan timestamp per karakter. Untuk VO rekaman, timing dicocokkan ke jeda nyata di audio (±0,3 detik).
 - **🎨 Motion graphic editable.** HTML + GSAP di HyperFrames, dengan komponen siap pakai: counter angka, tile grafik mini, kartu, pill, mock dashboard, dan lainnya.
@@ -117,7 +117,7 @@ Semua script ada di `scripts/` dan bisa juga dijalankan manual dari Terminal.
 python3 scripts/make_vo.py --script script.txt --out-dir work/vo [--voice-id ID] [--model eleven_v4] \
         [--pause-sentence 0.4] [--pause-paragraph 1.0]
 ```
-- **Format script:** baris kosong menandai paragraf baru. Kalimat diakhiri `.`, `?`, atau `!`. Tag `[...]` boleh dipakai.
+- **Format script:** baris kosong menandai paragraf baru. Kalimat diakhiri `.`, `?`, atau `!`. Jangan pakai tag `[...]`.
 - **Cara kerja:** setiap kalimat dibuat lewat endpoint *with-timestamps*, lalu disambung sebagai WAV (akurat per sampel) dengan jeda napas.
 - **Bisa dilanjutkan:** kalimat yang sudah jadi tidak dibuat ulang saat perintah dijalankan lagi, jadi hemat kuota.
 - **Output:** `vo.wav` (master), `vo.mp3` (untuk didengar atau dibagikan), dan `timing.json`.
@@ -132,6 +132,9 @@ python3 scripts/vo_pauses.py apply  --cuts work/vo/cuts.json --out-dir work/vo
 - **`apply`:** menyisipkan jeda lalu menulis `vo.wav` dan `timing.json`, dengan format yang sama seperti `make_vo.py`.
 
 ### `pexels.py`: mencari dan mengunduh footage stock
+- **Batas pemakaian:** satu footage Pexels maksimal dipakai di 2 video. Pemakaian dihitung dari semua `stock/credits.txt` di workspace; footage yang sudah 2x disembunyikan dari hasil pencarian dan ditolak saat diunduh.
+- **Lagu Pixabay default:** "Educational Tutorial Presentation Music" (ViacheslavStarostin, 3:26) pada −26 LUFS.
+- **MP4 terfragmentasi** dari Pexels otomatis di-encode ulang ke `<nama>-fix.mp4` supaya bisa diimpor Tesseract.
 ```bash
 python3 scripts/pexels.py search   --query "field worker checking phone" --kind video --out work/stock/beat07.json
 python3 scripts/pexels.py download --candidates work/stock/beat07.json --id 6868428 --dest work/stock --name field-phone
@@ -157,12 +160,13 @@ Menambahkan musik latar ke video yang sudah dirakit.
 - **Sumber musik:** [Pixabay Music](https://pixabay.com/music/). Agent mencari lagu bertema presentasi atau learning (mis. *corporate explainer*, *educational presentation*) dan hanya menawarkan lagu yang **lebih panjang dari bagian VO**, supaya tidak perlu di-loop. Pengguna mendengarkan dulu lalu memilih, baru lagunya diunduh ke `<work>/music/`.
 - **Penempatan:** musik hanya berbunyi dari akhir Bumper In sampai awal Bumper Out. Bumper tetap memakai audio aslinya.
 - **Fade:** fade in 2 detik, lalu musik tetap berbunyi 2,5 detik setelah kata terakhir dan fade out halus ke Bumper Out.
-- **Volume:** musik disetel ke −22 LUFS dan diberi *ducking* ringan, jadi tetap terdengar saat narator bicara tapi tidak pernah menutupi VO. Hasil akhir tetap di −16…−14 LUFS.
+- **Volume:** musik disetel ke −26 LUFS dan diberi *ducking* ringan, jadi tetap terdengar saat narator bicara tapi tidak pernah menutupi VO. Hasil akhir tetap di −16…−14 LUFS.
+- **Lagu default:** "Educational Tutorial Presentation Music" oleh ViacheslavStarostin (3:26).
 - **Kredit:** judul, kreator, dan link lagu dicatat di `<work>/music/credits.txt`.
 
 ```bash
 python3 scripts/add_bgm.py --video work/SC3.mp4 --vo work/vo/vo.wav --music work/music/track.mp3 \
-  --start <durasi Bumper In> --out work/SC3_bgm.mp4 [--music-lufs -22] [--music-offset 0]
+  --start <durasi Bumper In> --out work/SC3_bgm.mp4 [--music-lufs -26] [--music-offset 0]
 ```
 Video tanpa musik tetap disimpan, jadi musik bisa diganti kapan saja.
 
@@ -277,7 +281,7 @@ Buka Claude Code di folder scene, lalu minta dengan bahasa biasa. Contoh:
 | `export.resolution` / `fps` | 720p / 30 | Output video |
 | `bumper_gain` | 0.5 (≈ −6 dB) | Koreksi volume bumper |
 | `vo_gain` | 0.8 | Volume VO, dikalibrasi untuk VO yang sudah dinormalisasi ke −16 LUFS |
-| `bgm.music_lufs` | −22 | Volume backsound sebelum ducking (makin kecil angkanya makin pelan, mis. −26) |
+| `bgm.music_lufs` | −26 | Volume backsound sebelum ducking (makin kecil angkanya makin pelan, mis. −26) |
 | `bgm.fade_in` / `fade_out` | 2 / 3 s | Fade in dan fade out backsound |
 | `bgm.tail` | 2,5 s | Lama musik tetap berbunyi setelah kata terakhir |
 | `bgm.duck_ratio` / `duck_threshold` | 2 / 0.1 | Kekuatan ducking saat narator bicara (ratio lebih besar = musik lebih ditekan) |
@@ -338,3 +342,7 @@ Skill ini dibangun di atas karya dan layanan berikut:
 
 House style, alur, dan preset disusun untuk produksi learning video **Telkom CorpU**.
 
+
+## Skill pendamping: hpl-thumbnail
+
+Folder [`hpl-thumbnail/`](hpl-thumbnail/) berisi skill untuk membuat thumbnail konten HPL: cover kompetensi, cover course, thumbnail video & artikel (16:9) dan audio (1:1). Judul diambil dari workbook CMS; tiap kompetensi memakai satu warna (kuning, tosca, biru, ungu, hijau, pink) dan satu ornamen (13 bentuk dari deck thumbnail HPL). Pasang dengan menyalin folder itu ke `~/.claude/skills/hpl-thumbnail`. Detail ada di `hpl-thumbnail/README.md` dan `hpl-thumbnail/SKILL.md`.

@@ -4,12 +4,35 @@
 search  : find landscape videos (or photos) for a storyboard beat; writes candidates JSON + a thumbnail contact sheet.
 download: fetch the chosen item into the scene folder and append attribution to credits.txt.
 
+Reuse cap: an item may appear in at most MAX_USES projects (default 2). Usage is counted from every
+`stock/credits.txt` under the workspace root (one count per project), so search hides items already at
+the cap and fetches more results to fill the list, and download refuses them.
+
 Key: env PEXELS_API_KEY or ~/.config/pexels/key. Never printed.
 """
-import argparse, json, os, sys, urllib.parse, urllib.request
+import argparse, json, os, re, sys, urllib.parse, urllib.request
 from pathlib import Path
 
 API = "https://api.pexels.com"
+MAX_USES = 2
+
+
+def workspace_root(stock_dir, override=None):
+    """<workspace>/<scene>/<scene>_Video/stock -> <workspace>, unless --usage-root / HPL_STOCK_ROOT is given."""
+    r = override or os.environ.get("HPL_STOCK_ROOT")
+    return Path(r) if r else Path(stock_dir).resolve().parents[2]
+
+
+def usage(root, exclude_dir=None):
+    """{pexels id: number of projects whose stock/credits.txt lists it}. Versions/ backups are skipped."""
+    counts = {}
+    for cf in Path(root).rglob("stock/credits.txt"):
+        if "Versions" in cf.parts or (exclude_dir and cf.parent.resolve() == Path(exclude_dir).resolve()):
+            continue
+        ids = set(re.findall(r"pexels\.com/(?:video|photo)/[^\s)]*?-?(\d+)/?\)", cf.read_text(encoding="utf-8", errors="ignore")))
+        for i in ids:
+            counts[i] = counts.get(i, 0) + 1
+    return counts
 
 
 def key():
@@ -42,8 +65,11 @@ def best_file(files, min_h=720, max_h=1080):
 
 def search(a):
     q = urllib.parse.quote(a.query)
+    stock_dir = Path(a.out).parent
+    used = usage(workspace_root(stock_dir, a.usage_root), exclude_dir=stock_dir)
+    per = min(80, a.n * 4)  # over-fetch so items at the reuse cap can be dropped
     if a.kind == "video":
-        d = get(f"{API}/videos/search?query={q}&orientation=landscape&size=medium&per_page={a.n}&locale={a.locale}")
+        d = get(f"{API}/videos/search?query={q}&orientation=landscape&size=medium&per_page={per}&locale={a.locale}")
         items = []
         for v in d.get("videos", []):
             if v["duration"] < a.min_dur:
@@ -57,12 +83,16 @@ def search(a):
         items = [{"id": p["id"], "kind": "photo", "w": p["width"], "h": p["height"], "download": p["src"]["large2x"],
                   "thumb": p["src"]["medium"], "page": p["url"], "author": p["photographer"], "author_url": p["photographer_url"],
                   "alt": p.get("alt", "")} for p in d.get("photos", [])]
+    capped = [it for it in items if used.get(str(it["id"]), 0) >= a.max_uses]
+    items = [dict(it, used=used.get(str(it["id"]), 0)) for it in items if used.get(str(it["id"]), 0) < a.max_uses][:a.n]
+    if capped:
+        print(f"skipped {len(capped)} item(s) already used in {a.max_uses}+ projects: " + ", ".join(str(it["id"]) for it in capped))
     out = Path(a.out); out.parent.mkdir(parents=True, exist_ok=True)
     json.dump({"query": a.query, "kind": a.kind, "items": items}, open(out, "w"), indent=1)
     sheet = contact_sheet(items, out.with_suffix(".jpg"), a.query)
     for i, it in enumerate(items, 1):
         extra = f"{it['duration']}s {it['w']}x{it['h']}" if it["kind"] == "video" else f"{it['w']}x{it['h']}"
-        print(f"{i}. id={it['id']} {extra} by {it['author']}  {it['page']}")
+        print(f"{i}. id={it['id']} {extra} by {it['author']}  used {it['used']}x  {it['page']}")
     print(f"-> {out}" + (f" | sheet {sheet}" if sheet else ""))
 
 
@@ -100,6 +130,9 @@ def download(a):
     if not it:
         sys.exit(f"id {a.id} not in {a.candidates}")
     dest_dir = Path(a.dest); dest_dir.mkdir(parents=True, exist_ok=True)
+    n = usage(workspace_root(dest_dir, a.usage_root), exclude_dir=dest_dir).get(str(it["id"]), 0)
+    if n >= a.max_uses:
+        sys.exit(f"id {a.id} is already used in {n} projects (cap {a.max_uses}); pick another item or search a new query")
     ext = ".mp4" if it["kind"] == "video" else ".jpg"
     name = a.name or f"pexels-{it['kind']}-{it['id']}"
     dest = dest_dir / f"{name}{ext}"
@@ -112,6 +145,13 @@ def download(a):
             if not b:
                 break
             f.write(b)
+    if it["kind"] == "video":  # fragmented MP4 (no frame count) breaks Tesseract import: re-encode
+        import subprocess
+        nb = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=nb_frames", "-of", "csv=p=0", str(dest)], capture_output=True, text=True).stdout.strip()
+        if not nb.isdigit():
+            fixed = dest.with_name(dest.stem + "-fix.mp4")
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(dest), "-an", "-c:v", "libx264", "-crf", "18", "-preset", "fast", "-r", "30", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(fixed)], check=True)
+            print(f"re-encoded fragmented MP4 -> {fixed} (use this file)")
     with open(dest_dir / "credits.txt", "a", encoding="utf-8") as f:
         f.write(f"{dest.name}: {it['kind']} by {it['author']} on Pexels ({it['page']})\n")
     print(json.dumps({"file": str(dest), "kind": it["kind"], "duration": it.get("duration"), "w": it["w"], "h": it["h"], "credit": it["author"]}))
@@ -122,7 +162,9 @@ if __name__ == "__main__":
     s = sp.add_parser("search"); s.add_argument("--query", required=True); s.add_argument("--kind", choices=["video", "photo"], default="video")
     s.add_argument("--n", type=int, default=6); s.add_argument("--min-dur", type=int, default=4); s.add_argument("--locale", default="en-US")
     s.add_argument("--out", required=True)
+    for p_ in (s,): p_.add_argument("--usage-root"); p_.add_argument("--max-uses", type=int, default=MAX_USES)
     d = sp.add_parser("download"); d.add_argument("--candidates", required=True); d.add_argument("--id", required=True)
     d.add_argument("--dest", required=True); d.add_argument("--name")
+    d.add_argument("--usage-root"); d.add_argument("--max-uses", type=int, default=MAX_USES)
     a = ap.parse_args()
     search(a) if a.cmd == "search" else download(a)

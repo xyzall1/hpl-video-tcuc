@@ -12,6 +12,20 @@
 - One idea per beat. Change the visual at least every ~4 s. Keep text on screen long enough to read (≥ 1.5 s after it finishes entering).
 - Typical beat recipes: count-up number; grid of mini-chart tiles (`miniTile` kinds 0 = bars, 1 = line, 2 = pie, 3 = table); a lens or highlight over a crowd; a mock dashboard with a cursor click and ripple that updates linked charts; before/after (15 → 9); a triangle for trade-offs; ≠ cards for inconsistency; a loading bar with a timer; laptop → phone.
 
+## Layout precision (reviewer feedback: uneven spacing, off-centre, broken arrows)
+- Lay out every row/grid of cards, chips or badges with **flex or CSS grid and one `gap`** per group. Never place siblings with hand-typed `left`/`top` values.
+- Centre each group on the canvas (`left: 50%` + `translateX(-50%)`, or a full-width flex container with `justify-content: center`). Two-column comparisons use equal column widths and a centred divider.
+- Animate with transforms (`y`, `scale`, `opacity`) only, so entrances never shift the final layout.
+- Arrows and connector lines: compute start/end from the connected elements' `getBoundingClientRect()` at build time (or place both cards and the arrow in the same flex row with the arrow as its own item). Both ends must touch, or sit an equal small gap from, their cards. Dashed routes drawn with draw-on must end at the target icon.
+- Symbols inside circles/badges (+, −, ✓, ×, numbers that must look centred) are drawn as SVG strokes on the circle's centre, not font glyphs — glyph baselines sit visibly low.
+- Connector arrows (between cards, chips, or words in a heading) are SVG arrows or `hArrow`, never the glyphs → ↔ ⟶ — glyphs render small and sit low. When cards of different heights are joined, centre-align the row so the arrow hits both cards' midlines.
+- Same-role elements share the same size (equal card widths in a row, equal chip heights).
+
+## Cue timing (reviewer feedback: graphics missing or appearing too early)
+- Take each reveal time from the **word** it illustrates in `timing.json` (per-character times), not from the sentence start. An element may enter at most ~0.2 s before its word.
+- Every element stays visible until its beat's exit (`fadeScene`/`out`) — no element exits before the beat ends unless the script calls for it, and no beat ends before its sentence finishes.
+- After a VO regenerate, re-derive all cue times; never reuse times from the old VO.
+
 ## Layout zones (1920×1080 canvas)
 - Title zone: y 90–230, left-aligned at x 120–160, or centred.
 - Content: y 250–880.

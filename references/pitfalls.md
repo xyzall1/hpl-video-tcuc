@@ -18,6 +18,8 @@
 ## Timing
 - Whisper transcripts are floored to whole seconds. Snap each line to a detected silence (`vo_pauses.py detect`). Two lines can snap to the same gap, so fix it by hand in `cuts.json`.
 - ElevenLabs `with-timestamps` gives per-character times, so cues are exact. Strip `[audio tags]` from subtitle text; `timing_lib` does this.
+- Some Pexels MP4s are fragmented (ffprobe `nb_frames=N/A`); Tesseract import fails with "video needs a positive duration and dimensions". `pexels.py download` re-encodes them to `<name>-fix.mp4`; use that file.
+- Audio tags (`[short pause]`, emotion tags) make ElevenLabs add breaths/coughs heard as "uhuk". Send a tag-free script; pauses come from punctuation and assembly silence.
 - `eleven_v3` does not accept `previous_text` / `next_text`. `make_vo.py` does not send them for v3 or v4 (v4 untested with stitching).
 - Default model is `eleven_v4` (confirmed working, Sep 2026). The API key may lack `models_read`, so the model list cannot be queried; test with a real call instead.
 

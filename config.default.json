@@ -48,7 +48,7 @@
     148
   ],
   "bgm": {
-    "music_lufs": -22.0,
+    "music_lufs": -26.0,
     "fade_in": 2.0,
     "fade_out": 3.0,
     "duck_threshold": 0.1,
