@@ -22,6 +22,7 @@ The input can be a plain script (VO is generated with ElevenLabs) or a recorded 
 - **Two approval stops** (✋): the storyboard, and the motion-graphics preview. Everything else runs without asking.
 - Read `references/house-style.md` before designing and `references/pitfalls.md` before assembling.
 - Keep all work editable: the HyperFrames HTML source and the Tesseract `.tsrct` project.
+- Use the skill's scripts as written; never replace a failing step with a hand-made substitute. HyperFrames needs a headless browser and Tesseract/ffmpeg need normal file access: in a sandbox (e.g. Codex), if a command is blocked, stop and ask the user to approve running it outside the sandbox.
 
 ## Workflow
 

@@ -14,6 +14,11 @@ Make the thumbnails for HPL learning content, matching the HPL thumbnail decks:
 - Node.js 18+ with **HyperFrames** (`npx hyperframes`); each thumbnail is a one-frame HyperFrames snapshot
 - Arial Bold: the macOS system copy is used automatically; elsewhere put it at `$SKILL/fonts/ArialBold.ttf` (not included in the repo because of its licence)
 
+## Rendering rule (important)
+- Always render with `scripts/make_thumb.py` or `scripts/batch_from_cms.py`. **Never write your own renderer** (Pillow, canvas, ImageMagick, etc.): hand-made versions break the letter-spacing, the en dash in the course label, line wrapping and the shadow.
+- The scripts need a headless browser (HyperFrames snapshot). In a sandbox (e.g. Codex) the browser may be blocked. Then **stop and ask the user to approve running the command outside the sandbox** (escalated permissions); do not fall back to another method.
+- After rendering, open the PNG and check: label on one line, the dash in `COURSE n – …` sits at mid-height, title inside the left text area, ornament complete.
+
 ## Design rules
 - **Level = background brightness:** Fundamental = second-brightest, Developing = brightest, Intermediate = darkest.
 - **Colour per competency, chosen by the user by name:** kuning, tosca, biru, ungu, hijau, pink (`--palette=<name>`; aliases: oranye = kuning, biru muda = tosca, merah muda = pink). One competency uses one colour at every level. Name colours only; do not show hex codes or tables to the user. Preview: `palettes_preview.jpg`.

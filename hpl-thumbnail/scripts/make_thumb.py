@@ -94,7 +94,7 @@ html,body{{margin:0}}
 svg{{position:absolute;inset:0}}
 /* text box: x122 y166 w914 h749, anchored middle; deck shadow blur 14pt, dist 2pt down, black 42% */
 .box{{position:absolute;left:122px;top:166px;width:914px;height:749px;display:flex;flex-direction:column;justify-content:center;font-family:"ArialB",Arial,sans-serif;font-weight:700;filter:drop-shadow(0 3px 3px rgba(0,0,0,.45)) drop-shadow(0 4px 14px rgba(0,0,0,.35))}}
-.lab{{font-size:26px;letter-spacing:6.4px;color:{S};margin-bottom:24px;text-transform:uppercase}}
+.lab{{font-size:26px;letter-spacing:6.4px;color:{S};margin-bottom:24px;text-transform:uppercase;white-space:nowrap}}
 .box.sq{{left:104px;top:713px;width:873px;height:266px;align-items:center;text-align:center}}
 .box.sq h1{{font-size:46px;line-height:1.3}}
 h1{{margin:0;font-size:{TSZ}px;line-height:1.3;color:#fff;font-weight:700}}

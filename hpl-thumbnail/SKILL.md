@@ -7,6 +7,11 @@ description: Buat thumbnail konten HPL/Telkom CorpU — cover kompetensi, cover 
 
 Skill root = folder file ini (`$SKILL`). Render memakai HyperFrames snapshot (`npx hyperframes snapshot`), jadi butuh Node + hyperframes seperti skill video.
 
+## Aturan render (penting)
+- Selalu render dengan `scripts/make_thumb.py` atau `scripts/batch_from_cms.py`. **Jangan pernah membuat renderer sendiri** (Pillow, canvas, ImageMagick, dll.): versi buatan sendiri merusak jarak huruf, tanda pisah di label course, pemenggalan baris, dan bayangan.
+- Script butuh browser headless (HyperFrames snapshot). Di sandbox (mis. Codex) browser bisa terblokir. Bila begitu, **berhenti dan minta user menyetujui menjalankan perintah di luar sandbox**; jangan beralih ke cara lain.
+- Setelah render, buka PNG dan cek: label satu baris, tanda pisah di `COURSE n – …` berada di tengah tinggi huruf, judul di area teks kiri, ornamen utuh.
+
 ## Aturan desain (dari deck user)
 - **Ukuran:** 16:9 1920×1080 untuk cover kompetensi, cover course, video, artikel. 1:1 1080×1080 untuk audio.
 - **Warna per level = kecerahan background** (aturan user): Fundamental = **terang kedua**, Intermediate = **paling gelap**, Developing = paling terang. (Deck sendiri memakai yang paling terang untuk Fundamental — aturan user yang dipakai.)
