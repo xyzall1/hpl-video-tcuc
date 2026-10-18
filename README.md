@@ -208,24 +208,43 @@ hpl-video-tcuc/
 
 ## ⚙️ Instalasi
 
-### 1. Prasyarat
-| Kebutuhan | Keterangan |
-|---|---|
-| [Claude Code](https://claude.com/claude-code) | Desktop app atau CLI |
-| `ffmpeg` / `ffprobe` | Untuk olah dan cek audio/video |
-| Python 3.9+ dan [Pillow](https://pypi.org/project/pillow/) | `pip3 install pillow` |
-| Node.js 18+ | Untuk `npx hyperframes` |
-| Tesseract CLI 0.2.x | Ikuti panduan instalasi di skill `tesseract-video` |
-| Skill pendamping | `hyperframes` (+ `hyperframes-core`), `tesseract-video`, dan `tts-script-enhancer` (opsional) |
+Panduan ini untuk siapa saja yang ingin memakai skill ini di komputernya sendiri. Repo ini berisi **dua skill**: `hpl-video-tcuc` (video pembelajaran, di root repo) dan `hpl-thumbnail` (thumbnail, di folder `hpl-thumbnail/`).
 
-### 2. Pasang skill
+### 1. Siapkan aplikasi
+| Kebutuhan | Untuk | Cara pasang (macOS) |
+|---|---|---|
+| [Claude Code](https://claude.com/claude-code) **atau** [Codex CLI](https://github.com/openai/codex) | Menjalankan skill | Desktop app / CLI |
+| Python 3.9+ dengan Pillow dan openpyxl | Video & thumbnail | `pip3 install pillow openpyxl` |
+| Node.js 18+ | HyperFrames (video & thumbnail) | `brew install node` |
+| `ffmpeg` / `ffprobe` | Video | `brew install ffmpeg` |
+| Tesseract CLI 0.2.x | Video (perakitan) | Ikuti skill `tesseract-video` atau [rilisnya](https://github.com/mirage-hq/tesseract) |
+| Skill `hyperframes` (+ `hyperframes-core`) dan `tesseract-video` | Video, khusus Claude Code | Pasang sesuai dokumentasi masing-masing |
+
+Hanya butuh thumbnail? Cukup Python dan Node.js.
+
+### 2. Unduh repo
+Dengan Git:
 ```bash
-git clone https://github.com/entuds/hpl-video-tcuc.git ~/.claude/skills/hpl-video-tcuc
+git clone https://github.com/xyzall1/hpl-video-tcuc.git
 ```
-Untuk update ke versi terbaru: `git -C ~/.claude/skills/hpl-video-tcuc pull`
+Tanpa Git: buka halaman repo → **Code → Download ZIP**, lalu ekstrak.
 
-### 3. Simpan API key (masing-masing orang)
-Key disimpan di file pribadi, **bukan di folder skill**. Tempel key **sekali** saja saat diminta:
+### 3a. Pasang di Claude Code
+Salin kedua skill ke folder skill Claude:
+```bash
+mkdir -p ~/.claude/skills
+cp -R hpl-video-tcuc ~/.claude/skills/hpl-video-tcuc
+cp -R hpl-video-tcuc/hpl-thumbnail ~/.claude/skills/hpl-thumbnail
+```
+Buka ulang Claude Code. Kedua skill akan muncul dan terpakai otomatis saat diminta, misalnya *"buat learning video dari folder ini"* atau *"buat thumbnail level 1 dari workbook CMS ini"*.
+
+Untuk update ke versi terbaru: unduh ulang repo lalu ulangi perintah di atas.
+
+### 3b. Pasang di Codex CLI (atau agen lain seperti Cursor, Gemini CLI)
+Tidak perlu menyalin apa pun. Jalankan agen di folder repo, atau minta agen membaca `AGENTS.md` (video) dan `hpl-thumbnail/AGENTS.md` (thumbnail). Isinya sama dengan `SKILL.md`, hanya ditulis untuk agen non-Claude. ChatGPT versi web/app tidak bisa dipakai karena tidak bisa menjalankan aplikasi di komputer Anda.
+
+### 4. Simpan API key (masing-masing orang, hanya untuk video)
+Setiap orang memakai key-nya sendiri. Key disimpan di file pribadi, **bukan di folder skill**. Tempel key **sekali** saja saat diminta:
 ```bash
 mkdir -p ~/.config/elevenlabs && read -s -p "ElevenLabs key: " K && printf '%s' "$K" > ~/.config/elevenlabs/key && chmod 600 ~/.config/elevenlabs/key && unset K
 mkdir -p ~/.config/pexels && read -s -p "Pexels key: " K && printf '%s' "$K" > ~/.config/pexels/key && chmod 600 ~/.config/pexels/key && unset K
@@ -234,7 +253,30 @@ mkdir -p ~/.config/pexels && read -s -p "Pexels key: " K && printf '%s' "$K" > ~
 - Key Pexels (gratis): [pexels.com/api](https://www.pexels.com/api/)
 - Alternatifnya, pakai environment variable `ELEVENLABS_API_KEY` / `PEXELS_API_KEY`.
 
-> Jangan tempel API key di chat Claude, dan jangan commit key ke repo.
+> Jangan tempel API key di chat, dan jangan commit key ke repo.
+
+### 5. Atur voice ElevenLabs (hanya untuk video)
+Salin konfigurasi bawaan lalu isi `voice_id` dengan voice milik Anda:
+```bash
+cp ~/.claude/skills/hpl-video-tcuc/config.default.json ~/.claude/skills/hpl-video-tcuc/config.json
+```
+`config.json` bersifat pribadi dan tidak ikut di-commit. Kalau `voice_id` belum diisi, agen akan menanyakannya sekali.
+
+### 6. Font thumbnail
+Thumbnail memakai **Arial Bold**. Di macOS font ini dipakai otomatis dari sistem. Di Windows/Linux, salin file Arial Bold ke `hpl-thumbnail/fonts/ArialBold.ttf` (font tidak disertakan di repo karena berlisensi).
+
+### 7. Cek instalasi
+```bash
+ffmpeg -version | head -1 && node -v && python3 -c "import PIL, openpyxl; print('python ok')" && npx hyperframes --version
+```
+Uji thumbnail (hasilnya `tes.png` di folder saat ini):
+```bash
+python3 ~/.claude/skills/hpl-thumbnail/scripts/make_thumb.py tes.png fundamental heksagon "Tes Thumbnail" --palette=biru
+```
+
+### Yang tidak perlu dan jangan dibagikan
+- `config.json`, file key di `~/.config/…`, dan folder `fonts/` milik Anda.
+- File proyek (folder video, workbook CMS, hasil render). Semua ini memang tidak ada di repo.
 
 ---
 
