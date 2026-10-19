@@ -11,14 +11,14 @@ Skill root = folder file ini (`$SKILL`). Hasil: satu `.xlsx` per kompetensi, **s
 ## Kolom (urutan dari kiri, tetap)
 | Kolom | Isi |
 |---|---|
-| Learning Content Title | Nama modul/section |
+| Learning Content Title | **Judul modul**, diambil dari file modul (PPT/PDF/DOCX modul) atau course design; bukan dari artikel |
 | Text Core Learning Content | **"Konten ini berfokus pada pembahasan mengenai "** + KB (dari Dirkom, kata kerja awal disesuaikan) |
 | Judul Video | Judul video final |
 | Deskripsi Video | Deskripsi ajakan + baris kosong + kredit |
 | Judul Audio | Judul audio final |
 | Deskripsi Audio | Deskripsi ajakan + baris kosong + kredit |
 | Judul Artikel | Judul dari dokumen artikel (heading pertama) |
-| Section Title | Nama modul/section (sama dengan Learning Content Title) |
+| Section Title | **Judul modul** (sama dengan Learning Content Title) |
 | Nama Course | Nama course dari course plan / course design |
 | Deskripsi Course | **"Course ini berfokus pada pembahasan mengenai "** + KB (sama dengan Text Core). Cukup satu kalimat ini: jangan tambah ringkasan topik atau kalimat "Setelah mengikuti course ini…", supaya isinya tidak melebihi KB. |
 | Learning Path Title | `<Nama kompetensi> <Level>`, mis. "User Interface Design Fundamental" (3 per kompetensi) |
@@ -46,7 +46,7 @@ Isi diambil dari konten sebenarnya (script/VO sendiri, atau transkrip). Bahasa I
 ## Alur A — konten dibuat sendiri (sesuai course design)
 Sumber utama: **course design** (workbook ADDIE / course plan / tracker).
 1. KB: `python3 "$SKILL/scripts/collect.py" kb <kode> <level>`.
-2. Nama course & nama modul/topik: `python3 "$SKILL/scripts/collect.py" addie <design.xlsx> <level>` (sheet "Design-Topik"); atau dari tracker yang ditempel user.
+2. Nama course & judul modul/topik: `python3 "$SKILL/scripts/collect.py" addie <design.xlsx> <level>` (sheet "Design-Topik"), file modul yang dibuat, atau tracker yang ditempel user. Judul modul dipakai untuk Learning Content Title dan Section Title.
 3. Judul video/audio/artikel dan bahan deskripsi: dari file produksi sendiri (script/naskah VO, judul audio NotebookLM, artikel).
 4. Tanyakan pembuat & reviewer, lalu lanjut ke **Bangun**.
 
@@ -55,7 +55,7 @@ Input dari user: **kode kompetensi + level**, **folder/link konten per section**
 1. KB: `collect.py kb <kode> <level>`. Section n → KB dan modul sesuai urutan (section 1 = KB1 · Modul 1 bila tidak ada keterangan lain; konfirmasi bila ragu).
 2. Per section: `python3 "$SKILL/scripts/collect.py" folder "<folder section>"` → judul dari nama file video/audio (rapikan: buang nomor urut, "(1)", underscore), judul artikel dari heading dokumen, transkrip video & audio (HyperFrames transcribe, bahasa Indonesia; abaikan kalimat ulang/halusinasi di akhir transkrip).
 3. Link: file di OneDrive/SharePoint tersinkron dibaca langsung; link lain dibuka/diunduh dengan izin user (sebut nama file, sumber, ukuran) ke folder kerja sementara, lalu proses seperti folder. Link yang perlu login: user login sendiri di browser.
-4. Nama modul: dari course plan bila ada; jika tidak, dari nama file artikel ("Artikel modul_ … <judul>") atau judul artikel — konfirmasi ke user.
+4. Judul modul (untuk Learning Content Title dan Section Title): dari **file modul** di folder section (judul slide pertama PPT, heading DOCX, atau baris pertama PDF) atau dari course plan. Jangan mengambil dari artikel. Bila tidak ada file modul, tanyakan judul modul ke user dan biarkan kolomnya kosong (kuning) sampai dijawab. Cocokkan kode kompetensi dan level di file modul dengan target; bila berbeda (mis. modul TC-228 di folder TC-229), jangan dipakai dan beri tahu user.
 5. Lanjut ke **Bangun**.
 
 ## Bangun

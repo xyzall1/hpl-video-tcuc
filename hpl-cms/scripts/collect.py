@@ -55,6 +55,42 @@ def cmd_addie(xlsx, level):
         courses[kb]["topics"].append({"modul": int(g(r, "No")), "title": g(r, "Judul topik")})
     print(json.dumps(courses, ensure_ascii=False, indent=1))
 
+BOILER = re.compile(r"(?i)^(telkom corporate university|school of|modul pembelajaran|[a-e]\.\s|identitas modul|daftar isi)")
+
+def module_title(path):
+    """Module title and competency code. Order: identity-table row 'Judul/Nama Modul', first non-boilerplate
+    title line, then the file name ('…_Modul3_Evaluasi_dan_Business_Case' -> 'Evaluasi dan Business Case')."""
+    title, code, text = None, None, ""
+    try:
+        if path.lower().endswith(".docx"):
+            import docx
+            d = docx.Document(path)
+            for t in d.tables:
+                for r in t.rows:
+                    cells = [c.text.strip() for c in r.cells]
+                    if len(cells) >= 2:
+                        if re.match(r"(?i)(judul|nama) modul", cells[0]): title = title or cells[1]
+                        if re.match(r"(?i)kode kompetensi", cells[0]): code = code or cells[1]
+                    text += " ".join(cells) + "\n"
+            text = "\n".join(p.text for p in d.paragraphs) + "\n" + text
+        elif path.lower().endswith(".pptx"):
+            from pptx import Presentation
+            for sl in Presentation(path).slides[:3]:
+                for sh in sl.shapes:
+                    if sh.has_text_frame: text += sh.text_frame.text + "\n"
+        elif path.lower().endswith(".pdf"):
+            text = subprocess.run(["pdftotext", "-l", "2", path, "-"], capture_output=True, text=True).stdout
+    except Exception as e:
+        return {"title": None, "code": None, "note": f"gagal dibaca: {e}"}
+    m = re.search(r"\b(TC|LC)-?\s?(\d{3})\b", (code or "") + " " + text + " " + os.path.basename(path))
+    code = f"{m.group(1)}-{m.group(2)}" if m else None
+    if not title:
+        fm = re.search(r"(?i)modul[\s_-]*\d+[\s_-]+(.+)$", os.path.splitext(os.path.basename(path))[0])
+        if fm: title = fm.group(1).replace("_", " ").strip()
+    if not title:
+        title = next((l.strip() for l in text.splitlines() if l.strip() and not BOILER.match(l.strip())), None)
+    return {"title": title, "code": code}
+
 def heading(docx_path):
     import docx
     d = docx.Document(docx_path)
@@ -75,7 +111,8 @@ def cmd_folder(path, *opts):
     out = o.get("out", "/tmp/hpl-cms-transcripts")
     files = sorted(glob.glob(os.path.join(path, "*")))
     pick = lambda exts: [f for f in files if f.lower().endswith(exts)]
-    rep = {"folder": path, "video": [], "audio": [], "artikel": []}
+    rep = {"folder": path, "modul": [], "video": [], "audio": [], "artikel": []}
+    is_mod = lambda f: "modul" in os.path.basename(f).lower() and "artikel" not in os.path.basename(f).lower()
     stem = lambda f: re.sub(r"\s*\(\d+\)$", "", re.sub(r"^\d+\s*", "", os.path.splitext(os.path.basename(f))[0])).replace("_", " ").strip()
     for f in pick((".mp4", ".mov", ".m4v")):
         rep["video"].append({"file": f, "title_from_name": stem(f),
@@ -83,8 +120,13 @@ def cmd_folder(path, *opts):
     for f in pick((".mp3", ".m4a", ".wav")):
         rep["audio"].append({"file": f, "title_from_name": stem(f),
                              "transcript": None if o.get("no-transcribe") else transcribe(f, os.path.join(out, "a_" + stem(f)[:40]))})
-    for f in pick((".docx",)):
-        rep["artikel"].append({"file": f, "heading": heading(f)})
+    for f in pick((".pptx", ".pdf", ".docx")):
+        if is_mod(f) or f.lower().endswith((".pptx", ".pdf")):
+            rep["modul"].append({"file": f, **module_title(f)})
+        else:
+            rep["artikel"].append({"file": f, "heading": heading(f)})
+    if not rep["modul"]:
+        rep["modul_note"] = "Tidak ada file modul: tanyakan judul modul ke user (jangan ambil dari artikel)."
     print(json.dumps(rep, ensure_ascii=False, indent=1))
 
 if __name__ == "__main__":
