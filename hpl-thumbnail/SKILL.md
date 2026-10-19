@@ -14,7 +14,7 @@ Skill root = folder file ini (`$SKILL`). Render memakai HyperFrames snapshot (`n
 
 ## Aturan desain (dari deck user)
 - **Ukuran:** 16:9 1920×1080 untuk cover kompetensi, cover course, video, artikel. 1:1 1080×1080 untuk audio.
-- **Warna per level = kecerahan background** (aturan user): Fundamental = **terang kedua**, Intermediate = **paling gelap**, Developing = paling terang. (Deck sendiri memakai yang paling terang untuk Fundamental — aturan user yang dipakai.)
+- **Warna per level = kecerahan background** (aturan user, sama dengan deck): Fundamental = **paling terang**, Developing = **terang kedua**, Intermediate = **paling gelap**.
 - **Teks:** Arial Bold putih + bayangan. Label berwarna terang dari palet (mis. #FCD34D untuk kuning), huruf kapital, letter-spacing lebar. Ukuran judul: cover 46pt, course 40pt, konten 32pt; audio 23pt rata tengah di bawah.
 - **Ornamen per kompetensi = pilihan user, disebut dengan nama:** cincin, diagram, grafik, heksagon, kubus, orbit, panah, piramida, sarang, satelit, tabung, target, tumpukan (`--ornament=<nama>`). Semuanya diambil persis dari deck (`ornaments.json`) dan punya versi 16:9 serta 1:1, jadi thumbnail audio otomatis memakai ornamen yang sama. Pratinjau: `$SKILL/ornaments_preview.jpg`.
 - **Untuk kompetensi baru, tanyakan warna dan ornamen sekaligus** dalam satu pertanyaan singkat, misalnya "Mau warna dan ornamen apa? Warna: kuning, tosca, biru, ungu, hijau, pink. Ornamen: cincin, diagram, grafik, heksagon, kubus, orbit, panah, piramida, sarang, satelit, tabung, target, tumpukan." Kirim `ornaments_preview.jpg` bersama pertanyaan itu karena nama ornamen sulit dibayangkan. Catat pilihan di memori supaya tidak ditanya ulang.

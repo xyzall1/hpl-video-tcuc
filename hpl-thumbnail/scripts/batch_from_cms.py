@@ -7,7 +7,7 @@ CMS columns (header row 1): new hpl-cms layout (Nama Course, Deskripsi Course, J
 Output: <code>_00_Cover Kompetensi - ..., <code>_0n_Cover Course n - ..., <code>_KBk_Mm_{Video,Artikel,Audio} - <judul>.png"""
 import sys,os,re,subprocess,openpyxl
 from concurrent.futures import ThreadPoolExecutor
-args=[a for a in sys.argv[1:] if not a.startswith("--")]; opts=dict(a[2:].split("=",1) for a in sys.argv[1:] if a.startswith("--"))
+args=[a for a in sys.argv[1:] if not a.startswith("--")]; opts=dict((a[2:].split("=",1)+[True])[:2] for a in sys.argv[1:] if a.startswith("--"))
 xlsx,sheet,level,code,comp,out=args
 orn=opts.get("ornament","heksagon"); aorn=opts.get("audio-ornament",orn)   # one ornament per competency; audio uses its 1:1 version
 MT=os.path.join(os.path.dirname(os.path.abspath(__file__)),"make_thumb.py")

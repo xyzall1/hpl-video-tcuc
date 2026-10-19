@@ -20,7 +20,7 @@ Make the thumbnails for HPL learning content, matching the HPL thumbnail decks:
 - After rendering, open the PNG and check: label on one line, the dash in `COURSE n – …` sits at mid-height, title inside the left text area, ornament complete.
 
 ## Design rules
-- **Level = background brightness:** Fundamental = second-brightest, Developing = brightest, Intermediate = darkest.
+- **Level = background brightness:** Fundamental = brightest, Developing = second-brightest, Intermediate = darkest.
 - **Colour per competency, chosen by the user by name:** kuning, tosca, biru, ungu, hijau, pink (`--palette=<name>`; aliases: oranye = kuning, biru muda = tosca, merah muda = pink). One competency uses one colour at every level. Name colours only; do not show hex codes or tables to the user. Preview: `palettes_preview.jpg`.
 - **Ornament per competency, chosen by the user by name:** cincin, diagram, grafik, heksagon, kubus, orbit, panah, piramida, sarang, satelit, tabung, target, tumpukan (`--ornament=<name>`). The shapes come exactly from the decks (`ornaments.json`) and each has a 16:9 and a 1:1 version, so the audio thumbnails use the same ornament. Preview: `ornaments_preview.jpg`.
 - For a new competency, ask for colour and ornament together in one short question and show `ornaments_preview.jpg` with it. Remember the answer for later levels of the same competency.

@@ -9,7 +9,7 @@ args=[a for a in sys.argv[1:] if not a.startswith("--")]; opts=dict(a[2:].split(
 out,level,orn,title=args[:4]; label=args[4] if len(args)>4 else ""
 size=opts.get("size","content" if not label else "course")
 HERE=os.path.join(os.path.dirname(os.path.abspath(__file__)),"..")
-# level -> background (Fundamental = second-brightest, Intermediate = darkest, per user; Developing = brightest)
+# level -> background (user rule, as in the deck): Fundamental = brightest, Developing = second, Intermediate = darkest
 SQ=opts.get("format")=="square"
 # user-facing colour names (Indonesian) -> deck colour family
 ALIAS={"kuning":"amber","oranye":"amber","tosca":"cyan","biru muda":"cyan","biru":"blue","ungu":"violet","hijau":"emerald","pink":"rose","merah muda":"rose"}
@@ -18,7 +18,7 @@ PAL=opts.get("palette","kuning").strip().lower(); PAL=ALIAS.get(PAL,PAL)
 COLORS={"amber":("#FBBF24","#FCD34D"),"cyan":("#22D3EE","#67E8F9"),"blue":("#60A5FA","#93C5FD"),
         "violet":("#A78BFA","#C4B5FD"),"emerald":("#34D399","#6EE7B7"),"rose":("#FB7185","#FDA4AF")}
 if PAL not in COLORS: sys.exit("warna tidak dikenal; pilih: kuning, tosca, biru, ungu, hijau, pink")
-BG=("sq_" if SQ else "")+PAL+"_"+{"fundamental":"mid","developing":"bright","intermediate":"dark"}[level]+".jpg"
+BG=("sq_" if SQ else "")+PAL+"_"+{"fundamental":"bright","developing":"mid","intermediate":"dark"}[level]+".jpg"
 W_,H_=(1080,1080) if SQ else (1920,1080)
 TSZ={"cover":92,"course":80,"content":64}[size]
 # Arial Bold is not redistributed in the repo: use the bundled copy if present, else the macOS system font
