@@ -45,6 +45,11 @@ Tanda `: / ? \ * " < > |` dibuang dari nama file (judul di gambar tetap utuh). S
 ```bash
 python3 "$SKILL/scripts/batch_from_cms.py" <CMS.xlsx> "TC262 L1" fundamental TC262_L1 "Strategic Media Planning" _thumbnail/out/L1 --palette=kuning --ornament=heksagon --audio-ornament=tumpukan
 ```
+   Output per level, di folder output:
+   - **gambar PNG** semua thumbnail (cover kompetensi, cover course, video, artikel, audio);
+   - **`<KODE>_Thumbnail_16x9.pptx`** (cover, video, artikel) dan **`<KODE>_Thumbnail_1x1_Audio.pptx`** (audio): satu gambar per slide, ukuran slide sama dengan deck thumbnail HPL, nama file di notes. Slide ini tinggal di-copy ke deck di cloud (pilih semua slide → Copy → paste setelah slide terakhir);
+   - contact sheet `<KODE>_contact_sheet.jpg` di folder induk.
+   Workbook CMS format baru (`hpl-cms`, kolom Nama Course) maupun lama (kolom LU + Course Design) sama-sama bisa dibaca.
 3. Lihat contact sheet (`_thumbnail/out/TC262_L1_contact_sheet.jpg`): judul tidak terpotong/keluar kotak, label benar, background sesuai level. Kirim ke user dan daftar nama file **per LU** (cover course di awal tiap KB; video, artikel, audio per LU).
 4. Setelah disetujui, lanjut level berikutnya dengan level/sheet/kode yang sesuai.
 

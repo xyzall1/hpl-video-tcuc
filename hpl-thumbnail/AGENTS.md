@@ -51,6 +51,11 @@ The characters `: / ? \ * " < > |` are dropped from file names only; the title o
 python3 "$SKILL/scripts/batch_from_cms.py" <CMS.xlsx> "TC262 L1" fundamental TC262_L1 "Strategic Media Planning" _thumbnail/out/L1 \
   --palette=kuning --ornament=heksagon --audio-ornament=tumpukan
 ```
+   Output per level in the output folder:
+   - **PNG images** of every thumbnail;
+   - **`<CODE>_Thumbnail_16x9.pptx`** (covers, video, article) and **`<CODE>_Thumbnail_1x1_Audio.pptx`** (audio): one full-bleed image per slide, same slide size as the HPL thumbnail decks, file name in the notes, ready to copy into the deck in the cloud;
+   - contact sheet `<CODE>_contact_sheet.jpg` in the parent folder.
+   Both the new `hpl-cms` workbook layout (Nama Course column) and the old one (LU + Course Design) are read.
 3. Open the contact sheet it writes next to the output folder (`<CODE>_contact_sheet.jpg`). Check that no title is cut off or outside its box, labels are right, and the background matches the level. Show it to the user with the file names grouped per LU (course cover at the start of each KB; video, article, audio per LU).
 4. After approval, run the next level with its sheet, level and code.
 
