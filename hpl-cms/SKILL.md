@@ -19,7 +19,7 @@ Skill root = folder file ini (`$SKILL`). Hasil: satu `.xlsx` per kompetensi, **s
 | Judul Artikel | Judul dari dokumen artikel (heading pertama) |
 | Section Title | Nama modul/section (sama dengan Learning Content Title) |
 | Nama Course | Nama course dari course plan / course design |
-| Deskripsi Course | **"Course ini berfokus pada pembahasan mengenai "** + KB (sama dengan Text Core) |
+| Deskripsi Course | **"Course ini berfokus pada pembahasan mengenai "** + KB (sama dengan Text Core). Cukup satu kalimat ini: jangan tambah ringkasan topik atau kalimat "Setelah mengikuti course ini…", supaya isinya tidak melebihi KB. |
 | Learning Path Title | `<Nama kompetensi> <Level>`, mis. "User Interface Design Fundamental" (3 per kompetensi) |
 | Learning Path Description | `Learning Path for <Nama kompetensi>: <Level>`, tanpa deskripsi tambahan |
 
