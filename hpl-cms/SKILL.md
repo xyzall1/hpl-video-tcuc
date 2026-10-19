@@ -79,4 +79,4 @@ python3 "$SKILL/scripts/build_cms.py" build data.json "<folder kompetensi>/_CMS/
 3. Level berikutnya = sheet baru di file yang sama. Revisi: ubah JSON lalu `build` ulang; simpan salinan file lama sebelum menimpa.
 4. Kirim file dan tabel ringkas isinya; tandai yang perlu dikonfirmasi user.
 
-Format: header teal `#2796A3` teks putih tebal, teks rata atas dan wrap, border tipis, freeze kolom A & baris 1, sel wajib yang kosong berwarna kuning. Jangan ubah urutan kolom (dipakai untuk upload).
+Format: **satu sheet per level**; **baris diberi warna lembut berbeda per KB** (KB1 biru, KB2 hijau, KB3 oranye, KB4 ungu, …) supaya baris satu course mudah dikenali; header teal `#2796A3` teks putih tebal, teks rata atas dan wrap, border tipis, freeze kolom A & baris 1; sel wajib yang kosong berwarna kuning terang. Jangan ubah urutan kolom (dipakai untuk upload).

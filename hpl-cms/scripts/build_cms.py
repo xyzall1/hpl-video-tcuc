@@ -53,7 +53,9 @@ def build(data, out):
     for w in check(d): print("CEK:", w)
     wb = openpyxl.Workbook(); wb.remove(wb.active)
     thin = Side(style="thin", color="FFBFBFBF"); box = Border(left=thin, right=thin, top=thin, bottom=thin)
-    yellow = PatternFill("solid", fgColor="FFFFF2CC")
+    yellow = PatternFill("solid", fgColor="FFFFE066")   # empty required cell
+    # one soft tint per KB so rows of the same course group visually
+    KB_TINT = ["FFE3F2FD", "FFE8F5E9", "FFFFF3E0", "FFF3E5F5", "FFE0F7FA", "FFFCE4EC"]
     for sh in d["sheets"]:
         ws = wb.create_sheet(sh["name"][:31])
         for i, (h, wdt) in enumerate(COLS, 1):
@@ -73,7 +75,8 @@ def build(data, out):
             for i, v in enumerate(row, 1):
                 cell = ws.cell(r, i, v); cell.border = box
                 cell.alignment = Alignment(vertical="top", wrap_text=True)
-                if not v: cell.fill = yellow
+                kbn = int(re.sub(r"\D", "", lu["kb"])) - 1
+                cell.fill = yellow if not v else PatternFill("solid", fgColor=KB_TINT[kbn % len(KB_TINT)])
             ws.row_dimensions[r].height = 150
         ws.freeze_panes = "B2"
     wb.save(out)
