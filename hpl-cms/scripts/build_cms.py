@@ -44,6 +44,7 @@ def check(d):
                 t = lu.get(k, "")
                 if t.startswith("Produced with"): warn.append(f"{tag}: {k} sudah berisi kredit; tulis isi saja")
                 if not re.search(r"\b(Yuk|Mari)\b", t): warn.append(f"{tag}: {k} belum bernada ajakan (Yuk/Mari)")
+                if len(t.split()) > 50: warn.append(f"{tag}: {k} terlalu panjang ({len(t.split())} kata, maks 50)")
             if re.search(r"\[[^\]]+\]", " ".join(str(v) for v in lu.values())): warn.append(f"{tag}: ada tanda [..] tersisa")
     return warn
 

@@ -35,12 +35,11 @@ Reviewed by <reviewer>.
 ```
 Tanyakan **pembuat dan reviewer** setiap kompetensi baru (jangan pakai nama default). Tool default: Claude (video), NotebookLM (audio); konfirmasi bila konten dari pihak lain.
 
-## Deskripsi video & audio: ajakan + persuasif (3–4 kalimat)
-1. Pertanyaan pemantik dari situasi yang dekat dengan peserta.
-2. "Yuk, tonton video ini / dengarkan diskusi ini dan pahami/pelajari …" + poin utama konten.
-3. Kalimat persuasif: manfaat nyata yang didapat peserta setelah menonton/mendengar (mis. lebih cepat memahami, lebih percaya diri berdiskusi), tetap dalam batas KB.
-4. "Mari …" ajakan penutup.
-Contoh video: "Pernah menekan tombol lalu ragu apakah data sudah terkirim? Yuk, tonton video ini dan pahami fondasi user interface, mulai dari … hingga … . Mari mulai merancang dari kebutuhan pengguna melalui pendekatan human-centered design."
+## Deskripsi video & audio: singkat, ajakan, persuasif (3 kalimat, maks 50 kata)
+1. Pertanyaan pemantik singkat dari situasi yang dekat dengan peserta.
+2. "Yuk, tonton video ini / dengarkan diskusi ini dan pahami/pelajari …" + inti konten dalam satu frasa (jangan daftar panjang).
+3. "Mari …" yang sekaligus persuasif: manfaat nyata bagi peserta, tetap dalam batas KB.
+Contoh video (41 kata): "Pernah ragu apakah data sudah terkirim setelah menekan tombol? Yuk, tonton video ini dan pahami fondasi user interface, dari elemen pembentuknya hingga kaitannya dengan UX. Mari lihat desain dari kebutuhan pengguna agar setiap layar terasa lebih jelas dan mudah digunakan."
 Isi diambil dari konten sebenarnya (script/VO sendiri, atau transkrip). Bahasa Indonesia baku, sapaan "Anda", tanpa emoji/hashtag. Gaya ajakan **hanya** untuk deskripsi video & audio.
 
 ## Alur A — konten dibuat sendiri (sesuai course design)
