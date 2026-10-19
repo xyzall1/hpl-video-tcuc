@@ -57,18 +57,8 @@ for i,f in enumerate(fs):
     im=Image.open(f); im=im.resize((W,270) if im.width!=im.height else (270,270))
     c.paste(im,((i%4)*(W+10)+(W-im.width)//2,(i//4)*280))
 cs=os.path.join(out,f"../{code}_contact_sheet.jpg"); c.save(cs,quality=85); print("contact sheet:",os.path.abspath(cs))
-# PowerPoint: one full-bleed image per slide, deck sizes of the HPL thumbnail decks; file name in the notes
+# PowerPoint (per level): 16:9 deck in CMS column order + separate audio deck. Use make_pptx.py to merge levels.
 if not opts.get("no-pptx"):
-    from pptx import Presentation
-    from pptx.util import Emu
-    def order(f):
-        b=os.path.basename(f); mm=re.search(r"_KB(\d+)_M(\d+)_(Video|Artikel|Audio) - ",b)
-        return (0,0,0,b) if not mm else (int(mm.group(1)),int(mm.group(2)),("Video","Artikel","Audio").index(mm.group(3)),b)
-    for suffix,W,H_,sel in (("16x9",12192000,6858000,lambda b:"_Audio - " not in b),("1x1_Audio",6858000,6858000,lambda b:"_Audio - " in b)):
-        pr=Presentation(); pr.slide_width,pr.slide_height=Emu(W),Emu(H_); n=0
-        for f in sorted(fs,key=order):
-            if not sel(os.path.basename(f)): continue
-            sl=pr.slides.add_slide(pr.slide_layouts[6]); sl.shapes.add_picture(f,0,0,Emu(W),Emu(H_))
-            sl.notes_slide.notes_text_frame.text=os.path.basename(f)[:-4]; n+=1
-        if n:
-            pp=os.path.join(out,f"{code}_Thumbnail_{suffix}.pptx"); pr.save(pp); print("pptx:",os.path.abspath(pp),n,"slide")
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import make_pptx
+    make_pptx.main(os.path.join(out, code), out)

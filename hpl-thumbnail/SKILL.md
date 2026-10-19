@@ -47,8 +47,11 @@ python3 "$SKILL/scripts/batch_from_cms.py" <CMS.xlsx> "TC262 L1" fundamental TC2
 ```
    Output per level, di folder output:
    - **gambar PNG** semua thumbnail (cover kompetensi, cover course, video, artikel, audio);
-   - **`<KODE>_Thumbnail_16x9.pptx`** (cover, video, artikel) dan **`<KODE>_Thumbnail_1x1_Audio.pptx`** (audio): satu gambar per slide, ukuran slide sama dengan deck thumbnail HPL, nama file di notes. Slide ini tinggal di-copy ke deck di cloud (pilih semua slide → Copy → paste setelah slide terakhir);
+   - **`<KODE>_Thumbnail_16x9.pptx`**: satu file berisi semua thumbnail 16:9, **urut sesuai kolom CMS**: Judul Video (semua LU) → Judul Artikel (semua LU) → Nama Course (cover course) → Learning Path (cover kompetensi);
+   - **`<KODE>_Thumbnail_1x1_Audio.pptx`**: satu file terpisah untuk semua thumbnail audio, urut per LU. Keduanya satu gambar per slide, ukuran slide sama dengan deck HPL, nama file di notes; tinggal di-copy ke deck di cloud;
    - contact sheet `<KODE>_contact_sheet.jpg` di folder induk.
+   Setelah semua level selesai, gabungkan jadi **satu PPT 16:9 dan satu PPT audio untuk seluruh level** (urut L1 → L2 → L3, di dalam tiap level sesuai urutan kolom):
+   `python3 "$SKILL/scripts/make_pptx.py" _thumbnail/out/<KODE> _thumbnail/out/L1 _thumbnail/out/L2 _thumbnail/out/L3`
    Workbook CMS format baru (`hpl-cms`, kolom Nama Course) maupun lama (kolom LU + Course Design) sama-sama bisa dibaca.
 3. Lihat contact sheet (`_thumbnail/out/TC262_L1_contact_sheet.jpg`): judul tidak terpotong/keluar kotak, label benar, background sesuai level. Kirim ke user dan daftar nama file **per LU** (cover course di awal tiap KB; video, artikel, audio per LU).
 4. Setelah disetujui, lanjut level berikutnya dengan level/sheet/kode yang sesuai.

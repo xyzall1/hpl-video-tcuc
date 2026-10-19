@@ -53,8 +53,11 @@ python3 "$SKILL/scripts/batch_from_cms.py" <CMS.xlsx> "TC262 L1" fundamental TC2
 ```
    Output per level in the output folder:
    - **PNG images** of every thumbnail;
-   - **`<CODE>_Thumbnail_16x9.pptx`** (covers, video, article) and **`<CODE>_Thumbnail_1x1_Audio.pptx`** (audio): one full-bleed image per slide, same slide size as the HPL thumbnail decks, file name in the notes, ready to copy into the deck in the cloud;
+   - **`<CODE>_Thumbnail_16x9.pptx`**: one deck with every 16:9 thumbnail **in CMS column order**: Judul Video (all LUs) → Judul Artikel (all LUs) → Nama Course (course covers) → Learning Path (competency cover);
+   - **`<CODE>_Thumbnail_1x1_Audio.pptx`**: a separate deck with every audio thumbnail, in LU order. One image per slide at the HPL deck sizes, file name in the notes;
    - contact sheet `<CODE>_contact_sheet.jpg` in the parent folder.
+   When all levels are done, merge them into **one 16:9 deck and one audio deck for all levels** (L1 → L2 → L3, column order inside each level):
+   `python3 "$SKILL/scripts/make_pptx.py" _thumbnail/out/<CODE> _thumbnail/out/L1 _thumbnail/out/L2 _thumbnail/out/L3`
    Both the new `hpl-cms` workbook layout (Nama Course column) and the old one (LU + Course Design) are read.
 3. Open the contact sheet it writes next to the output folder (`<CODE>_contact_sheet.jpg`). Check that no title is cut off or outside its box, labels are right, and the background matches the level. Show it to the user with the file names grouped per LU (course cover at the start of each KB; video, article, audio per LU).
 4. After approval, run the next level with its sheet, level and code.
