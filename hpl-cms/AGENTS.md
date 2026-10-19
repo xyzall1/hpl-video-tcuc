@@ -1,54 +1,71 @@
 # AGENTS.md: HPL CMS workbook
 
-Instructions for any coding agent that can run shell commands and read and write local files (Codex CLI, Cursor, Gemini CLI, …). The same workflow is packaged for Claude as `SKILL.md`; this file mirrors it.
-Requires Python 3.9+ with openpyxl. Use `scripts/build_cms.py` to write the workbook; do not build the Excel file by hand, so the format and credit block stay identical.
+Instructions for any coding agent that can run shell commands and read and write local files (Codex CLI, Cursor, Gemini CLI, …). The same workflow is packaged for Claude as `SKILL.md`; this file mirrors it (in Indonesian).
+Requires Python 3.9+ with openpyxl and python-docx, and Node.js for `npx hyperframes transcribe`. Always write the workbook with `scripts/build_cms.py`; never build the Excel file by hand. If a step is blocked by a sandbox (e.g. transcription), stop and ask the user to approve running it outside the sandbox.
 
 
 # Workbook CMS HPL
 
-Skill root = folder file ini (`$SKILL`). Hasilnya satu file `.xlsx` per kompetensi, **satu sheet per level** (mis. `TC262 L1`, `TC262 L2`, `TC262 L3`), satu baris per LU. Contoh lengkap: `examples/TC262_SMP.json` (Strategic Media Planning L1–L3).
+Skill root = folder file ini (`$SKILL`). Hasil: satu `.xlsx` per kompetensi, **satu sheet per level** (`TC229 L1`, `TC229 L2`, …), **satu baris per section/LU**. Contoh data: `examples/TC229_L1.json`.
 
-## Kolom (urutan tetap)
+## Kolom (urutan dari kiri, tetap)
 | Kolom | Isi |
 |---|---|
-| No | 1, 2, 3, … |
-| LU | `KB1 · Modul 1` |
-| Course Design | Nama course per KB, persis dari course plan/tracker user (mis. "Fondasi Strategic Media Planning"). Jangan mengarang; tanyakan bila belum ada. |
-| Course Description | 2 kalimat: "Course ini membangun/membahas/mengenalkan … mulai dari …, …, hingga … ." lalu "Setelah mengikuti course ini, peserta mampu …" (mengikuti kata kerja KB). |
-| Learning Content Title | = Judul Modul |
-| Text Core | Per KB: **"Konten ini berfokus pada penjelasan "** + isi Key Behaviour (KB) kompetensi. Ubah kata kerja awal KB agar nyambung: "Mampu menjelaskan X" → "X"; "Menerapkan …" → "penerapan …"; "Mengidentifikasi/Menganalisis/Merancang/Melakukan …" → "cara mengidentifikasi/…". Sisanya sama persis dengan KB (perbaiki salah ketik saja, mis. "merespon" → "merespons"). Sama untuk semua LU dalam satu KB. |
-| Judul Modul | Judul modul/LU dari course plan |
-| Judul Video | Judul video final (dari file/script video) |
-| Caption Video | Kredit video + baris kosong + isi caption |
-| Judul Audio | Judul audio final (NotebookLM) |
-| Caption Audio | Kredit audio + baris kosong + isi caption |
-| Judul Artikel | Judul artikel; **harus berbeda dari Judul Modul** (lebih spesifik, boleh pakai pola "X: Y") |
+| Learning Content Title | Nama modul/section |
+| Text Core Learning Content | **"Konten ini berfokus pada pembahasan mengenai "** + KB (dari Dirkom, kata kerja awal disesuaikan) |
+| Judul Video | Judul video final |
+| Deskripsi Video | Kredit + baris kosong + deskripsi ajakan |
+| Judul Audio | Judul audio final |
+| Deskripsi Audio | Kredit + baris kosong + deskripsi ajakan |
+| Judul Artikel | Judul dari dokumen artikel (heading pertama) |
+| Section Title | Nama modul/section (sama dengan Learning Content Title) |
+| Nama Course | Nama course dari course plan / course design |
+| Deskripsi Course | **"Course ini berfokus pada pembahasan mengenai "** + KB (sama dengan Text Core) |
+| Learning Path Title | `<Nama kompetensi> <Level>`, mis. "User Interface Design Fundamental" (3 per kompetensi) |
+| Learning Path Description | `Learning Path for <Nama kompetensi>: <Level>`, tanpa deskripsi tambahan |
 
-## Kredit caption (ditambahkan otomatis oleh script)
+**KB → frasa:** "Mampu menjelaskan X" → "X"; "Menerapkan …" → "penerapan …"; "Membuat …" → "cara membuat …"; "Mengidentifikasi/Menganalisis/Merancang/Melakukan/Menjalankan …" → "cara mengidentifikasi/…". Sisanya verbatim dari Dirkom; hanya perbaiki salah ketik nyata (mis. "digunakanseperti" → "digunakan seperti", "merespon" → "merespons").
+
+## Kredit deskripsi video/audio — selalu input dari user
 ```
-Produced with the support of Artificial Intelligence (AI) tools: Claude.
-Learning content created by Rosa Nur Aliana Sawafi.
-Reviewed by Zidny Aghniya.
+Produced with the support of Artificial Intelligence (AI) tools: <tool>.
+Learning content created by <pembuat>.
+Reviewed by <reviewer>.
 
-<isi caption>
+<deskripsi>
 ```
-Audio memakai tool `NotebookLM`. Nama pembuat, reviewer, dan tool diatur di `credits` pada data JSON; tanyakan ke user bila kompetensinya dibuat/di-review orang lain.
+Tanyakan **pembuat dan reviewer** setiap kompetensi baru (jangan pakai nama default). Tool default: Claude (video), NotebookLM (audio); konfirmasi bila konten dari pihak lain.
 
-## Isi caption
-- **Video:** 2–3 kalimat. Buka dengan kalimat pemantik yang dekat dengan masalah nyata, lalu "Video ini mengajak Anda memahami / membahas / menguraikan …" berisi poin utama video. Contoh: "Iklan yang bagus belum tentu efektif. Video ini mengajak Anda memahami apa itu strategic media planning, bedanya dengan media buying, …".
-- **Audio:** 2 kalimat. "Dengarkan pembahasan tentang … . Audio ini membahas/menjelaskan/membantu Anda … ."
-- Isi diambil dari konten sebenarnya (script/VO video, ringkasan audio, modul), bukan dikarang. Bahasa Indonesia baku, sapaan "Anda", istilah teknis Inggris boleh tanpa italic. Tanpa emoji, tanpa hashtag.
+## Deskripsi video & audio: kalimat ajakan (2–3 kalimat)
+1. Pertanyaan pemantik dari situasi yang dekat dengan peserta.
+2. "Yuk, tonton video ini / dengarkan diskusi ini dan pahami/pelajari …" + poin utama konten.
+3. "Mari …" ajakan penutup ke penerapan.
+Contoh video: "Pernah menekan tombol lalu ragu apakah data sudah terkirim? Yuk, tonton video ini dan pahami fondasi user interface, mulai dari … hingga … . Mari mulai merancang dari kebutuhan pengguna melalui pendekatan human-centered design."
+Isi diambil dari konten sebenarnya (script/VO sendiri, atau transkrip). Bahasa Indonesia baku, sapaan "Anda", tanpa emoji/hashtag. Gaya ajakan **hanya** untuk deskripsi video & audio.
 
-## Langkah
-1. Kumpulkan sumber: daftar KB kompetensi per level (tabel KB dari user), nama course (Course Design), judul modul, dan konten final tiap LU (video, audio, artikel). Tanyakan hanya yang belum ada.
-2. Tulis data ke JSON mengikuti `examples/TC262_SMP.json` (caption tanpa kredit).
-3. **Sampel dulu:** bangun satu level, tunjukkan beberapa baris ke user, minta persetujuan sebelum level lain.
+## Alur A — konten dibuat sendiri (sesuai course design)
+Sumber utama: **course design** (workbook ADDIE / course plan / tracker).
+1. KB: `python3 "$SKILL/scripts/collect.py" kb <kode> <level>`.
+2. Nama course & nama modul/topik: `python3 "$SKILL/scripts/collect.py" addie <design.xlsx> <level>` (sheet "Design-Topik"); atau dari tracker yang ditempel user.
+3. Judul video/audio/artikel dan bahan deskripsi: dari file produksi sendiri (script/naskah VO, judul audio NotebookLM, artikel).
+4. Tanyakan pembuat & reviewer, lalu lanjut ke **Bangun**.
+
+## Alur B — konten dari pihak lain (folder atau link)
+Input dari user: **kode kompetensi + level**, **folder/link konten per section**, **nama course per KB** (tidak ada di Dirkom maupun file konten; bila belum ada, kosongkan — kolom ditandai kuning — dan beri usulan nama ≤ 8 kata untuk dipilih), **pembuat & reviewer**.
+1. KB: `collect.py kb <kode> <level>`. Section n → KB dan modul sesuai urutan (section 1 = KB1 · Modul 1 bila tidak ada keterangan lain; konfirmasi bila ragu).
+2. Per section: `python3 "$SKILL/scripts/collect.py" folder "<folder section>"` → judul dari nama file video/audio (rapikan: buang nomor urut, "(1)", underscore), judul artikel dari heading dokumen, transkrip video & audio (HyperFrames transcribe, bahasa Indonesia; abaikan kalimat ulang/halusinasi di akhir transkrip).
+3. Link: file di OneDrive/SharePoint tersinkron dibaca langsung; link lain dibuka/diunduh dengan izin user (sebut nama file, sumber, ukuran) ke folder kerja sementara, lalu proses seperti folder. Link yang perlu login: user login sendiri di browser.
+4. Nama modul: dari course plan bila ada; jika tidak, dari nama file artikel ("Artikel modul_ … <judul>") atau judul artikel — konfirmasi ke user.
+5. Lanjut ke **Bangun**.
+
+## Bangun
+1. Tulis data JSON seperti `examples/TC229_L1.json` (deskripsi tanpa kredit; `courses.<KB>.kb` = frasa KB).
+2. **Sampel dulu** (satu section atau satu level), tunjukkan, minta persetujuan:
 ```bash
-python3 "$SKILL/scripts/build_cms.py" build data.json "_CMS/CMS_<KODE>_<Kompetensi>_L1-L3.xlsx"
+python3 "$SKILL/scripts/build_cms.py" build data.json "<folder kompetensi>/_CMS/CMS_<KODE>_<Kompetensi>.xlsx"
 ```
-   Script memberi peringatan `CEK:` bila Text Core tidak berawalan benar, Judul Artikel = Judul Modul, judul kembar, caption terlalu panjang/pendek, atau ada tanda `[..]`. Perbaiki semua sebelum menyerahkan.
-4. Tambahkan level berikutnya sebagai sheet baru di file yang sama, dengan aturan yang sama.
-5. Revisi workbook yang sudah ada: `build_cms.py dump <file.xlsx> data.json` → ubah JSON → `build` lagi (format tetap seragam). Simpan salinan file lama sebelum menimpa.
-6. Kirim file ke user dan ringkas perubahannya.
+   `CEK:` memperingatkan kredit kosong, nama course kosong, KB yang masih berawalan kata kerja, deskripsi tanpa "Yuk/Mari", dan sisa tanda `[..]`. Selesaikan atau laporkan ke user.
+3. Level berikutnya = sheet baru di file yang sama. Revisi: ubah JSON lalu `build` ulang; simpan salinan file lama sebelum menimpa.
+4. Kirim file dan tabel ringkas isinya; tandai yang perlu dikonfirmasi user.
 
-Format: header teal `#2796A3` teks putih tebal, teks rata atas dan wrap, border tipis, freeze di kolom C baris 2, lebar kolom tetap. Jangan ubah urutan kolom karena dipakai untuk upload.
+Format: header teal `#2796A3` teks putih tebal, teks rata atas dan wrap, border tipis, freeze kolom A & baris 1, sel wajib yang kosong berwarna kuning. Jangan ubah urutan kolom (dipakai untuk upload).

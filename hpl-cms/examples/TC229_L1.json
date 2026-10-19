@@ -1,0 +1,33 @@
+{
+ "competency": "User Interface Design",
+ "credits": {
+  "author": "Rosa Nur Aliana Sawafi",
+  "reviewer": "Zidny Aghniya",
+  "video_tool": "Claude",
+  "audio_tool": "NotebookLM"
+ },
+ "sheets": [
+  {
+   "name": "TC229 L1",
+   "level": "Fundamental",
+   "courses": {
+    "KB1": {
+     "name": "",
+     "kb": "prinsip-prinsip desain user interface."
+    }
+   },
+   "lus": [
+    {
+     "kb": "KB1",
+     "modul": 1,
+     "judul_modul": "Fondasi User Interface: Elemen, Layout, dan Hierarki Visual",
+     "judul_video": "Fondasi User Interface Design",
+     "caption_video": "Pernah menekan tombol lalu ragu apakah data sudah terkirim? Yuk, tonton video ini dan pahami fondasi user interface, mulai dari UI sebagai titik temu pengguna dan sistem, elemen pembentuknya seperti layout, warna, tipografi, ikon, dan tombol, hingga kaitannya dengan UX. Mari mulai merancang dari kebutuhan pengguna melalui pendekatan human-centered design.",
+     "judul_audio": "Review UI Berbasis Fungsi, Bukan Selera",
+     "caption_audio": "Masih sering berdebat soal warna tombol yang paling bagus? Yuk, dengarkan diskusi ini dan pelajari cara menilai antarmuka berdasarkan fungsi, bukan selera, mulai dari label navigasi yang memakai bahasa pengguna hingga pesan feedback yang memberi jalan keluar. Mari sampaikan temuan Anda kepada tim proyek dengan tiga elemen: temuan, dampak, dan rekomendasi awal.",
+     "judul_artikel": "Fondasi User Interface: Elemen, Layout, dan Hierarki Visual"
+    }
+   ]
+  }
+ ]
+}
