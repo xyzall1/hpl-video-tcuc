@@ -208,7 +208,7 @@ hpl-video-tcuc/
 
 ## ⚙️ Instalasi
 
-Panduan ini untuk siapa saja yang ingin memakai skill ini di komputernya sendiri. Repo ini berisi **dua skill**: `hpl-video-tcuc` (video pembelajaran, di root repo) dan `hpl-thumbnail` (thumbnail, di folder `hpl-thumbnail/`).
+Panduan ini untuk siapa saja yang ingin memakai skill ini di komputernya sendiri. Repo ini berisi **tiga skill**: `hpl-video-tcuc` (video pembelajaran, di root repo), `hpl-thumbnail` (thumbnail, di folder `hpl-thumbnail/`), dan `hpl-cms` (workbook Excel untuk upload CMS, di folder `hpl-cms/`).
 
 ### 1. Siapkan aplikasi
 | Kebutuhan | Untuk | Cara pasang (macOS) |
@@ -230,18 +230,19 @@ git clone https://github.com/xyzall1/hpl-video-tcuc.git
 Tanpa Git: buka halaman repo → **Code → Download ZIP**, lalu ekstrak.
 
 ### 3a. Pasang di Claude Code
-Salin kedua skill ke folder skill Claude:
+Salin ketiga skill ke folder skill Claude:
 ```bash
 mkdir -p ~/.claude/skills
 cp -R hpl-video-tcuc ~/.claude/skills/hpl-video-tcuc
 cp -R hpl-video-tcuc/hpl-thumbnail ~/.claude/skills/hpl-thumbnail
+cp -R hpl-video-tcuc/hpl-cms ~/.claude/skills/hpl-cms
 ```
-Buka ulang Claude Code. Kedua skill akan muncul dan terpakai otomatis saat diminta, misalnya *"buat learning video dari folder ini"* atau *"buat thumbnail level 1 dari workbook CMS ini"*.
+Buka ulang Claude Code. Ketiga skill akan muncul dan terpakai otomatis saat diminta, misalnya *"buat learning video dari folder ini"* *"buat thumbnail level 1 dari workbook CMS ini"*, atau *"buatkan tabel CMS beserta caption untuk kompetensi X level 1"*.
 
 Untuk update ke versi terbaru: unduh ulang repo lalu ulangi perintah di atas.
 
 ### 3b. Pasang di Codex CLI (atau agen lain seperti Cursor, Gemini CLI)
-Tidak perlu menyalin apa pun. Jalankan agen di folder repo, atau minta agen membaca `AGENTS.md` (video) dan `hpl-thumbnail/AGENTS.md` (thumbnail). Isinya sama dengan `SKILL.md`, hanya ditulis untuk agen non-Claude. ChatGPT versi web/app tidak bisa dipakai karena tidak bisa menjalankan aplikasi di komputer Anda.
+Tidak perlu menyalin apa pun. Jalankan agen di folder repo, atau minta agen membaca `AGENTS.md` (video), `hpl-thumbnail/AGENTS.md` (thumbnail), dan `hpl-cms/AGENTS.md` (CMS). Isinya sama dengan `SKILL.md`, hanya ditulis untuk agen non-Claude. ChatGPT versi web/app tidak bisa dipakai karena tidak bisa menjalankan aplikasi di komputer Anda.
 
 ### 4. Simpan API key (masing-masing orang, hanya untuk video)
 Setiap orang memakai key-nya sendiri. Key disimpan di file pribadi, **bukan di folder skill**. Tempel key **sekali** saja saat diminta:
@@ -388,3 +389,7 @@ House style, alur, dan preset disusun untuk produksi learning video **Telkom Cor
 ## Skill pendamping: hpl-thumbnail
 
 Folder [`hpl-thumbnail/`](hpl-thumbnail/) berisi skill untuk membuat thumbnail konten HPL: cover kompetensi, cover course, thumbnail video & artikel (16:9) dan audio (1:1). Judul diambil dari workbook CMS; tiap kompetensi memakai satu warna (kuning, tosca, biru, ungu, hijau, pink) dan satu ornamen (13 bentuk dari deck thumbnail HPL). Pasang dengan menyalin folder itu ke `~/.claude/skills/hpl-thumbnail`. Detail ada di `hpl-thumbnail/README.md` dan `hpl-thumbnail/SKILL.md`.
+
+## Skill pendamping: hpl-cms
+
+Folder [`hpl-cms/`](hpl-cms/) berisi skill untuk menyusun workbook Excel upload CMS: satu sheet per level, satu baris per LU, dengan Course Design, Course Description, Learning Content Title, Text Core (dari KB), judul video/audio/artikel, serta caption video dan audio lengkap dengan kredit baku. Script `build_cms.py` membuat file dengan format seragam dan mengecek kesalahan umum (Text Core, judul artikel kembar dengan judul modul, sisa tag). Detail ada di `hpl-cms/SKILL.md`.
