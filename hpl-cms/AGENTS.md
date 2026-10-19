@@ -43,6 +43,18 @@ Tanyakan **pembuat dan reviewer** setiap kompetensi baru (jangan pakai nama defa
 Contoh video (41 kata): "Pernah ragu apakah data sudah terkirim setelah menekan tombol? Yuk, tonton video ini dan pahami fondasi user interface, dari elemen pembentuknya hingga kaitannya dengan UX. Mari lihat desain dari kebutuhan pengguna agar setiap layar terasa lebih jelas dan mudah digunakan."
 Isi diambil dari konten sebenarnya (script/VO sendiri, atau transkrip). Bahasa Indonesia baku, sapaan "Anda", tanpa emoji/hashtag. Gaya ajakan **hanya** untuk deskripsi video & audio.
 
+## Sumber tiap kolom per alur
+| Kolom | Alur A — konten dibuat sendiri | Alur B — konten dari pihak lain |
+|---|---|---|
+| Learning Content Title, Section Title | Judul modul/topik di **course design** (ADDIE "Design-Topik" / course plan) | Judul dari **file modul** di folder section; bila tidak ada, tanya user |
+| Text Core, Deskripsi Course | KB dari Dirkom | KB dari Dirkom |
+| Judul Video / Audio | Judul final hasil produksi (naskah, file) | Nama file / judul di link |
+| Deskripsi Video / Audio | Dari naskah VO & ringkasan audio sendiri | Dari transkrip video & audio |
+| Judul Artikel | Judul artikel yang dibuat | Heading dokumen artikel |
+| Nama Course | **Course design** | **Input user** (kuning bila kosong) |
+| Kredit (pembuat, reviewer) | Input user | Input user |
+| Learning Path Title / Description | Nama kompetensi + level | Nama kompetensi + level |
+
 ## Alur A — konten dibuat sendiri (sesuai course design)
 Sumber utama: **course design** (workbook ADDIE / course plan / tracker).
 1. KB: `python3 "$SKILL/scripts/collect.py" kb <kode> <level>`.
