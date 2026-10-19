@@ -13,9 +13,9 @@ Skill root = folder file ini (`$SKILL`). Hasil: satu `.xlsx` per kompetensi, **s
 | Learning Content Title | Nama modul/section |
 | Text Core Learning Content | **"Konten ini berfokus pada pembahasan mengenai "** + KB (dari Dirkom, kata kerja awal disesuaikan) |
 | Judul Video | Judul video final |
-| Deskripsi Video | Kredit + baris kosong + deskripsi ajakan |
+| Deskripsi Video | Deskripsi ajakan + baris kosong + kredit |
 | Judul Audio | Judul audio final |
-| Deskripsi Audio | Kredit + baris kosong + deskripsi ajakan |
+| Deskripsi Audio | Deskripsi ajakan + baris kosong + kredit |
 | Judul Artikel | Judul dari dokumen artikel (heading pertama) |
 | Section Title | Nama modul/section (sama dengan Learning Content Title) |
 | Nama Course | Nama course dari course plan / course design |
@@ -27,18 +27,19 @@ Skill root = folder file ini (`$SKILL`). Hasil: satu `.xlsx` per kompetensi, **s
 
 ## Kredit deskripsi video/audio — selalu input dari user
 ```
+<deskripsi>
+
 Produced with the support of Artificial Intelligence (AI) tools: <tool>.
 Learning content created by <pembuat>.
 Reviewed by <reviewer>.
-
-<deskripsi>
 ```
 Tanyakan **pembuat dan reviewer** setiap kompetensi baru (jangan pakai nama default). Tool default: Claude (video), NotebookLM (audio); konfirmasi bila konten dari pihak lain.
 
-## Deskripsi video & audio: kalimat ajakan (2–3 kalimat)
+## Deskripsi video & audio: ajakan + persuasif (3–4 kalimat)
 1. Pertanyaan pemantik dari situasi yang dekat dengan peserta.
 2. "Yuk, tonton video ini / dengarkan diskusi ini dan pahami/pelajari …" + poin utama konten.
-3. "Mari …" ajakan penutup ke penerapan.
+3. Kalimat persuasif: manfaat nyata yang didapat peserta setelah menonton/mendengar (mis. lebih cepat memahami, lebih percaya diri berdiskusi), tetap dalam batas KB.
+4. "Mari …" ajakan penutup.
 Contoh video: "Pernah menekan tombol lalu ragu apakah data sudah terkirim? Yuk, tonton video ini dan pahami fondasi user interface, mulai dari … hingga … . Mari mulai merancang dari kebutuhan pengguna melalui pendekatan human-centered design."
 Isi diambil dari konten sebenarnya (script/VO sendiri, atau transkrip). Bahasa Indonesia baku, sapaan "Anda", tanpa emoji/hashtag. Gaya ajakan **hanya** untuk deskripsi video & audio.
 

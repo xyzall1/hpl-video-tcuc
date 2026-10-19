@@ -14,7 +14,7 @@ data.json:
               "judul_audio": "...", "caption_audio": "...", "judul_artikel": "..."}]}
   ]
 }
-Captions are the content sentences only; the credit block is added here. Empty required cells are highlighted yellow."""
+Captions are the content sentences only; the credit block is appended after them (description first, then a blank line, then credits). Empty required cells are highlighted yellow."""
 import sys, json, re, openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 
@@ -65,8 +65,8 @@ def build(data, out):
         for r, lu in enumerate(lus, 2):
             co = sh["courses"][lu["kb"]]
             row = [lu["judul_modul"], TEXT_CORE + co["kb"], lu["judul_video"],
-                   credit(c["video_tool"], c) + "\n\n" + lu["caption_video"].strip(), lu["judul_audio"],
-                   credit(c["audio_tool"], c) + "\n\n" + lu["caption_audio"].strip(), lu["judul_artikel"],
+                   lu["caption_video"].strip() + "\n\n" + credit(c["video_tool"], c), lu["judul_audio"],
+                   lu["caption_audio"].strip() + "\n\n" + credit(c["audio_tool"], c), lu["judul_artikel"],
                    lu["judul_modul"], co.get("name", ""), COURSE_DESC + co["kb"],
                    f"{d['competency']} {sh['level']}", f"Learning Path for {d['competency']}: {sh['level']}"]
             for i, v in enumerate(row, 1):
